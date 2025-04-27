@@ -1,9 +1,11 @@
 
+
 // Define the structure for recipe output
 export interface DoughRecipe {
   doughType: string; // Display name of the dough type
   ingredients: Array<{ name: string; quantity: string }>; // Ingredients for the FINAL dough mix
   preFermentIngredients?: Array<{ name: string; quantity: string }>; // Ingredients specifically for the pre-ferment
+  preFermentPercentageUsed?: number; // Percentage of total flour used in pre-ferment
   preFermentationSteps?: string[];
   fermentationSteps: string[];
 }
@@ -21,7 +23,7 @@ interface RecipeDefinition {
   };
   preFermentation?: {
     type: 'Biga' | 'Poolish';
-    flourPercentage: number; // % of total flour used in pre-ferment
+    flourPercentage: number; // Default % of total flour used in pre-ferment
     hydration: number; // Hydration % of the pre-ferment itself
     yeastPercentage: number; // % of *total* yeast used in pre-ferment
     steps: string[];
@@ -42,8 +44,8 @@ function formatYeast(weight: number): string {
     return `${round(weight, 1)}g`;
 }
 
-// Hardcoded Recipe Definitions
-const recipes: Record<string, RecipeDefinition> = {
+// Hardcoded Recipe Definitions - Export this for accessing defaults in UI
+export const recipes: Record<string, RecipeDefinition> = {
   neapolitan: {
     name: 'Classic Neapolitan',
     flourType: '"00" Flour',
@@ -92,7 +94,7 @@ const recipes: Record<string, RecipeDefinition> = {
     },
     preFermentation: {
       type: 'Biga',
-      flourPercentage: 40, // Use 40% of total flour
+      flourPercentage: 40, // Default % of total flour used in Biga
       hydration: 45, // Biga is stiff: 45% hydration
       yeastPercentage: 25, // Use 25% of *total* yeast in Biga
       steps: [
@@ -121,7 +123,7 @@ const recipes: Record<string, RecipeDefinition> = {
       },
       preFermentation: {
           type: 'Poolish',
-          flourPercentage: 30, // Use 30% of total flour
+          flourPercentage: 30, // Default % of total flour used in Poolish
           hydration: 100, // Poolish is 1:1 flour to water
           yeastPercentage: 33, // Use ~1/3 of *total* yeast
           steps: [
@@ -165,7 +167,8 @@ const recipes: Record<string, RecipeDefinition> = {
 export function getCalculatedRecipe(
   doughTypeKey: keyof typeof recipes,
   numberOfBalls: number,
-  ballSizeGrams: number
+  ballSizeGrams: number,
+  preFermentFlourPercentageInput?: number // Optional: User-defined percentage
 ): DoughRecipe | null {
   const definition = recipes[doughTypeKey];
   if (!definition) return null;
@@ -193,13 +196,22 @@ export function getCalculatedRecipe(
   let finalIngredients: DoughRecipe['ingredients'] = [];
   let preFermentIngredients: DoughRecipe['preFermentIngredients'] | undefined = undefined;
   let preFermentationSteps: string[] | undefined = definition.preFermentation?.steps;
+  let preFermentPercentageUsed : number | undefined = undefined;
+
 
   if (definition.preFermentation) {
-    // Calculate Pre-ferment Ingredients
-    const pf = definition.preFermentation;
-    const pfFlour = round(totalFlourWeight * (pf.flourPercentage / 100), 0);
-    const pfWater = round(pfFlour * (pf.hydration / 100), 0); // Water based on pre-ferment flour
-    const pfYeast = round(totalYeastWeight * (pf.yeastPercentage / 100), 2);
+    const pfDefinition = definition.preFermentation;
+    // Use user input percentage if provided and valid, otherwise use default
+    const flourPercentageToUse = preFermentFlourPercentageInput !== undefined && preFermentFlourPercentageInput >= 10 && preFermentFlourPercentageInput <= 80
+      ? preFermentFlourPercentageInput
+      : pfDefinition.flourPercentage;
+
+    preFermentPercentageUsed = flourPercentageToUse; // Store the percentage actually used
+
+    // Calculate Pre-ferment Ingredients based on the percentage being used
+    const pfFlour = round(totalFlourWeight * (flourPercentageToUse / 100), 0);
+    const pfWater = round(pfFlour * (pfDefinition.hydration / 100), 0); // Water based on pre-ferment flour
+    const pfYeast = round(totalYeastWeight * (pfDefinition.yeastPercentage / 100), 2);
 
     preFermentIngredients = [
         { name: definition.flourType, quantity: `${pfFlour}g` },
@@ -213,7 +225,12 @@ export function getCalculatedRecipe(
     const finalYeast = totalYeastWeight - pfYeast;
     const preFermentWeight = pfFlour + pfWater + pfYeast; // Approximate weight
 
-    finalIngredients.push({ name: `Mature ${pf.type}`, quantity: `~${round(preFermentWeight,0)}g (All from above)` });
+    // Ensure final flour and water are not negative (can happen with extreme percentages)
+    if (finalFlour < 0 || finalWater < 0) {
+      throw new Error(`Pre-ferment percentage (${flourPercentageToUse}%) is too high, resulting in negative final dough ingredients. Max recommended might be lower.`);
+    }
+
+    finalIngredients.push({ name: `Mature ${pfDefinition.type}`, quantity: `~${round(preFermentWeight,0)}g (All from above)` });
     finalIngredients.push({ name: definition.flourType, quantity: `${finalFlour}g` });
     finalIngredients.push({ name: 'Water', quantity: `${finalWater}g` });
     if (finalYeast > 0.001) { // Only add if significant yeast remains
@@ -249,6 +266,7 @@ export function getCalculatedRecipe(
     doughType: definition.name,
     ingredients: finalIngredients,
     preFermentIngredients: preFermentIngredients,
+    preFermentPercentageUsed: preFermentPercentageUsed,
     preFermentationSteps: preFermentationSteps,
     fermentationSteps: definition.fermentationSteps.map(step =>
       step.replace('portions', `${numberOfBalls} portions`)

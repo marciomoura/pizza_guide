@@ -25,8 +25,8 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { getCalculatedRecipe, type DoughRecipe } from '@/data/recipes'; // Import local recipe logic
-import { Pizza, ListChecks, ChefHat, Calculator, Wheat } from 'lucide-react'; // Added Wheat Icon
+import { getCalculatedRecipe, type DoughRecipe, recipes as recipeDefinitions } from '@/data/recipes'; // Import definitions too
+import { Pizza, ListChecks, ChefHat, Calculator, Wheat, Percent } from 'lucide-react'; // Added Wheat, Percent Icons
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 
@@ -37,12 +37,21 @@ const doughFormSchema = z.object({
   doughType: z.enum(['biga', 'poolish', 'neapolitan', 'new_york', 'brazilian'], {
     required_error: 'Please select a dough type.',
   }),
+  preFermentFlourPercentage: z.coerce.number().int().min(10, 'Must be at least 10%').max(80, 'Cannot exceed 80%').optional(),
+}).refine(data => {
+  // Require preFermentFlourPercentage only if dough type uses it
+  const requiresPreFerment = data.doughType === 'biga' || data.doughType === 'poolish';
+  return !requiresPreFerment || (requiresPreFerment && typeof data.preFermentFlourPercentage === 'number');
+}, {
+  message: "Pre-ferment percentage is required for this dough type.",
+  path: ["preFermentFlourPercentage"], // Apply error to this field
 });
+
 
 type DoughFormValues = z.infer<typeof doughFormSchema>;
 
 // Define dough type keys used in the recipes data
-const recipeKeys: Record<DoughFormValues['doughType'], keyof typeof import('@/data/recipes')['recipes']> = {
+const recipeKeys: Record<DoughFormValues['doughType'], keyof typeof recipeDefinitions> = {
   biga: 'biga',
   poolish: 'poolish',
   neapolitan: 'neapolitan',
@@ -71,8 +80,34 @@ export default function Home() {
       numberOfBalls: 3,
       ballSizeGrams: 250,
       doughType: undefined,
+      preFermentFlourPercentage: undefined, // Initialize as undefined
     },
   });
+
+  // Watch the doughType field to conditionally show the percentage input
+  const watchedDoughType = form.watch('doughType');
+  const requiresPreFerment = watchedDoughType === 'biga' || watchedDoughType === 'poolish';
+
+  // Effect to set default percentage when dough type changes
+  React.useEffect(() => {
+    if (watchedDoughType === 'biga') {
+      // Set default for Biga if percentage is not already set or type changed
+      if (form.getValues('preFermentFlourPercentage') === undefined) {
+         form.setValue('preFermentFlourPercentage', recipeDefinitions.biga.preFermentation?.flourPercentage || 40, { shouldValidate: true });
+      }
+    } else if (watchedDoughType === 'poolish') {
+       // Set default for Poolish if percentage is not already set or type changed
+       if (form.getValues('preFermentFlourPercentage') === undefined) {
+         form.setValue('preFermentFlourPercentage', recipeDefinitions.poolish.preFermentation?.flourPercentage || 30, { shouldValidate: true });
+       }
+    } else {
+      // Clear the percentage if the type doesn't need it
+      form.setValue('preFermentFlourPercentage', undefined);
+      // Manually clear errors if field is hidden
+      form.clearErrors('preFermentFlourPercentage');
+    }
+  }, [watchedDoughType, form]);
+
 
   const onSubmit: SubmitHandler<DoughFormValues> = (data) => {
     setIsLoading(true);
@@ -81,7 +116,13 @@ export default function Home() {
 
     try {
       const recipeKey = recipeKeys[data.doughType];
-      const result = getCalculatedRecipe(recipeKey, data.numberOfBalls, data.ballSizeGrams);
+      // Pass the user-defined percentage if available
+      const result = getCalculatedRecipe(
+        recipeKey,
+        data.numberOfBalls,
+        data.ballSizeGrams,
+        data.preFermentFlourPercentage // Pass the percentage
+      );
 
       if (result) {
         setDoughRecipe(result);
@@ -91,10 +132,14 @@ export default function Home() {
 
     } catch (error) {
       console.error('Failed to calculate dough recipe:', error);
+      let description = 'Could not calculate the dough recipe. Please check inputs or try again.';
+      if (error instanceof Error) {
+        description = error.message; // Show more specific error if available
+      }
       toast({
         variant: 'destructive',
         title: 'Error Calculating Recipe',
-        description: 'Could not calculate the dough recipe. Please check inputs or try again.',
+        description: description,
       });
     } finally {
       setTimeout(() => setIsLoading(false), 300); // Simulate network delay
@@ -157,7 +202,13 @@ export default function Home() {
                     render={({ field }) => (
                       <FormItem>
                         <FormLabel>Dough Type</FormLabel>
-                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <Select onValueChange={(value) => {
+                            field.onChange(value);
+                            // Reset percentage when type changes to allow default setting
+                            form.setValue('preFermentFlourPercentage', undefined, {shouldValidate: true});
+                          }}
+                          defaultValue={field.value}
+                         >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a dough style" />
@@ -176,6 +227,30 @@ export default function Home() {
                       </FormItem>
                     )}
                   />
+
+                   {/* Conditional Pre-ferment Percentage Input */}
+                   {requiresPreFerment && (
+                     <FormField
+                       control={form.control}
+                       name="preFermentFlourPercentage"
+                       render={({ field }) => (
+                         <FormItem>
+                           <FormLabel>Pre-ferment Flour (%)</FormLabel>
+                            <div className="relative">
+                             <FormControl>
+                               <Input type="number" placeholder={watchedDoughType === 'biga' ? 'e.g., 40' : 'e.g., 30'} {...field} value={field.value ?? ''} />
+                             </FormControl>
+                             <Percent className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
+                            </div>
+                           <FormDescription>
+                             Percentage of total flour used in the {doughTypeNames[watchedDoughType!].split(' ')[0]}.
+                           </FormDescription>
+                           <FormMessage />
+                         </FormItem>
+                       )}
+                     />
+                   )}
+
 
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
@@ -234,7 +309,7 @@ export default function Home() {
                    <>
                      <div>
                        <h2 className="text-xl font-semibold mb-3 flex items-center">
-                         <Wheat className="mr-2 h-5 w-5 text-accent" /> Pre-Ferment Ingredients
+                         <Wheat className="mr-2 h-5 w-5 text-accent" /> {recipeDefinitions[recipeKeys[watchedDoughType!]]?.preFermentation?.type} Ingredients ({doughRecipe.preFermentPercentageUsed}%)
                        </h2>
                        <ul className="list-disc list-inside space-y-1 text-foreground/90 bg-muted/30 p-4 rounded-md border">
                          {doughRecipe.preFermentIngredients.map((item, index) => (
@@ -270,7 +345,7 @@ export default function Home() {
                   <>
                     <div>
                        <h2 className="text-xl font-semibold mb-3 flex items-center">
-                         <ChefHat className="mr-2 h-5 w-5 text-accent" /> Pre-Fermentation Steps
+                         <ChefHat className="mr-2 h-5 w-5 text-accent" /> {recipeDefinitions[recipeKeys[watchedDoughType!]]?.preFermentation?.type} Steps
                        </h2>
                        <ol className="list-decimal list-inside space-y-2 text-foreground/90 pl-4">
                          {doughRecipe.preFermentationSteps.map((step, index) => (
