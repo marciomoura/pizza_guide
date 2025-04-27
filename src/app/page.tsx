@@ -348,7 +348,8 @@ export default function Home() {
                     {isFocaccia ? <MinusSquare className="h-6 w-6" /> : <Pizza className="h-6 w-6" />}
                     Your {doughRecipe.doughType} Recipe
                  </CardTitle>
-                 <CardDescription>Total Portions: {numberOfBalls} @ {ballSizeGrams}g each</CardDescription> {/* Add calculated details */}
+                 {/* Get values from the form state */}
+                 <CardDescription>Total Portions: {form.getValues('numberOfBalls')} @ {form.getValues('ballSizeGrams')}g each</CardDescription> {/* Add calculated details */}
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Pre-Ferment Ingredients (if applicable) */}
