@@ -1,10 +1,11 @@
 
 // Define the structure for recipe output
 export interface DoughRecipe {
-  ingredients: Array<{ name: string; quantity: string }>;
+  doughType: string; // Display name of the dough type
+  ingredients: Array<{ name: string; quantity: string }>; // Ingredients for the FINAL dough mix
+  preFermentIngredients?: Array<{ name: string; quantity: string }>; // Ingredients specifically for the pre-ferment
   preFermentationSteps?: string[];
   fermentationSteps: string[];
-  doughType: string; // To display the name correctly
 }
 
 // Define the structure for base recipe data (using Baker's Percentages)
@@ -16,15 +17,29 @@ interface RecipeDefinition {
     salt: number; // % relative to flour
     yeast: number; // % relative to flour (Instant Dry Yeast)
     oil?: number; // % relative to flour (optional)
+    sugar?: number; // % relative to flour (optional)
   };
   preFermentation?: {
     type: 'Biga' | 'Poolish';
     flourPercentage: number; // % of total flour used in pre-ferment
     hydration: number; // Hydration % of the pre-ferment itself
-    yeastPercentage?: number; // % of total yeast in pre-ferment (optional, can be a pinch)
+    yeastPercentage: number; // % of *total* yeast used in pre-ferment
     steps: string[];
   };
   fermentationSteps: string[];
+}
+
+// Helper function for rounding
+function round(value: number, decimals: number): number {
+    const factor = Math.pow(10, decimals);
+    return Math.round(value * factor) / factor;
+}
+
+// Helper function for formatting small yeast amounts
+function formatYeast(weight: number): string {
+    if (weight < 0.01) return '< 0.01g (a tiny pinch)';
+    if (weight < 0.1) return `${round(weight, 2)}g`;
+    return `${round(weight, 1)}g`;
 }
 
 // Hardcoded Recipe Definitions
@@ -33,9 +48,9 @@ const recipes: Record<string, RecipeDefinition> = {
     name: 'Classic Neapolitan',
     flourType: '"00" Flour',
     bakersPercentages: {
-      water: 62, // 62% hydration
-      salt: 2.8, // 2.8% salt
-      yeast: 0.1, // 0.1% IDY (adjust based on fermentation time/temp)
+      water: 62,
+      salt: 2.8,
+      yeast: 0.1,
     },
     fermentationSteps: [
       'Combine flour and most of the water (reserve ~30ml). Mix until shaggy.',
@@ -51,14 +66,14 @@ const recipes: Record<string, RecipeDefinition> = {
     name: 'New York Style',
     flourType: 'Bread Flour (High Gluten)',
     bakersPercentages: {
-      water: 65, // 65% hydration
-      salt: 2.5, // 2.5% salt
-      yeast: 0.4, // 0.4% IDY
-      oil: 2, // 2% Oil (e.g., Olive Oil)
-      // sugar: 1, // Optional: 1-2% Sugar/Diastatic Malt
+      water: 65,
+      salt: 2.5,
+      yeast: 0.4,
+      oil: 2,
+      sugar: 1, // Added sugar
     },
     fermentationSteps: [
-      'Combine flour, salt, yeast (and sugar if using) in a mixer bowl.',
+      'Combine flour, salt, yeast and sugar in a mixer bowl.',
       'Add water and oil. Mix on low speed with dough hook until combined.',
       'Increase speed to medium-low and knead for 8-12 minutes until smooth, elastic, and passes windowpane test.',
       'Bulk Ferment: Lightly oil a bowl, place dough in, turn to coat. Cover and let rise at room temp for 1-2 hours OR proceed directly to cold fermentation.',
@@ -71,18 +86,17 @@ const recipes: Record<string, RecipeDefinition> = {
     name: 'Biga (Pre-ferment)',
     flourType: '"00" Flour or Bread Flour',
     bakersPercentages: {
-      water: 68, // Higher hydration often used with Biga
+      water: 68,
       salt: 3,
-      yeast: 0.2, // Total IDY, some used in Biga
+      yeast: 0.2,
     },
     preFermentation: {
       type: 'Biga',
-      flourPercentage: 40, // Use 40% of total flour for Biga
+      flourPercentage: 40, // Use 40% of total flour
       hydration: 45, // Biga is stiff: 45% hydration
-      yeastPercentage: 25, // Use 25% of total yeast (or a tiny pinch) in Biga
+      yeastPercentage: 25, // Use 25% of *total* yeast in Biga
       steps: [
-        'Calculate Biga Ingredients: Determine flour, water, and yeast amount for the Biga based on percentages.',
-        'Mix Biga: Combine Biga flour, water, and yeast. Mix briefly until just combined (shaggy, stiff dough). Do not knead.',
+        'Mix Biga Ingredients: Combine Biga flour, Biga water, and Biga yeast. Mix briefly until just combined (shaggy, stiff dough). Do not knead.',
         'Ferment Biga: Cover loosely and let ferment at cool room temp (16-18°C) for 12-16 hours OR in the fridge (4°C) for 24-48 hours.',
       ],
     },
@@ -97,23 +111,21 @@ const recipes: Record<string, RecipeDefinition> = {
       'Temper: Before use (if cold proofed), let balls sit at room temp for 1-2 hours.',
     ],
   },
-  // Add Poolish and Brazilian definitions similarly...
   poolish: {
       name: 'Poolish (Pre-ferment)',
       flourType: '"00" Flour or All-Purpose Flour',
       bakersPercentages: {
-          water: 70, // Typically higher hydration
+          water: 70,
           salt: 2.8,
-          yeast: 0.15, // Total IDY
+          yeast: 0.15,
       },
       preFermentation: {
           type: 'Poolish',
           flourPercentage: 30, // Use 30% of total flour
-          hydration: 100, // Poolish is 1:1 flour to water by weight
-          yeastPercentage: 33, // Use ~1/3 of total yeast in Poolish
+          hydration: 100, // Poolish is 1:1 flour to water
+          yeastPercentage: 33, // Use ~1/3 of *total* yeast
           steps: [
-              'Calculate Poolish Ingredients: Determine flour, water, and yeast for Poolish.',
-              'Mix Poolish: Whisk together Poolish flour, water, and yeast until smooth (liquid batter).',
+              'Mix Poolish Ingredients: Whisk together Poolish flour, Poolish water, and Poolish yeast until smooth (liquid batter).',
               'Ferment Poolish: Cover and let ferment at room temp (~20-22°C) for 8-12 hours, or until bubbly, domed, and just starting to recede in the center.',
           ],
       },
@@ -131,12 +143,11 @@ const recipes: Record<string, RecipeDefinition> = {
       name: 'Brazilian Style',
       flourType: 'All-Purpose Flour',
       bakersPercentages: {
-          water: 55, // Often lower hydration
+          water: 55,
           salt: 1.8,
-          yeast: 1.5, // Can be higher for faster rise
-          oil: 5, // Often includes oil
-          sugar: 3, // Often includes sugar
-          // Optional: Egg yolk or milk powder sometimes added
+          yeast: 1.5,
+          oil: 5,
+          sugar: 3,
       },
       fermentationSteps: [
           'Combine Dry Ingredients: Whisk flour, salt, yeast, and sugar in a bowl.',
@@ -162,60 +173,86 @@ export function getCalculatedRecipe(
   const totalDoughWeight = numberOfBalls * ballSizeGrams;
 
   // Calculate total flour weight based on percentages
-  // Total Weight = Flour * (1 + %Water + %Salt + %Yeast + %Oil + %Sugar)
   const totalPercentage =
     1 +
     definition.bakersPercentages.water / 100 +
     definition.bakersPercentages.salt / 100 +
     definition.bakersPercentages.yeast / 100 +
     (definition.bakersPercentages.oil ?? 0) / 100 +
-    (definition.bakersPercentages.sugar ?? 0) / 100; // Added sugar here
+    (definition.bakersPercentages.sugar ?? 0) / 100;
 
-  const flourWeight = Math.round(totalDoughWeight / totalPercentage);
+  const totalFlourWeight = round(totalDoughWeight / totalPercentage, 0);
 
-  // Calculate individual ingredient weights
-  const waterWeight = Math.round(flourWeight * (definition.bakersPercentages.water / 100));
-  const saltWeight = Math.round(flourWeight * (definition.bakersPercentages.salt / 100) * 10) / 10; // Round to 1 decimal
-  const yeastWeight = Math.round(flourWeight * (definition.bakersPercentages.yeast / 100) * 100) / 100; // Round to 2 decimals
-  const oilWeight = definition.bakersPercentages.oil ? Math.round(flourWeight * (definition.bakersPercentages.oil / 100)) : 0;
-  const sugarWeight = definition.bakersPercentages.sugar ? Math.round(flourWeight * (definition.bakersPercentages.sugar / 100)) : 0; // Calculate sugar weight
+  // Calculate total amounts for other ingredients based on total flour
+  const totalWaterWeight = round(totalFlourWeight * (definition.bakersPercentages.water / 100), 0);
+  const totalSaltWeight = round(totalFlourWeight * (definition.bakersPercentages.salt / 100), 1);
+  const totalYeastWeight = round(totalFlourWeight * (definition.bakersPercentages.yeast / 100), 2);
+  const totalOilWeight = definition.bakersPercentages.oil ? round(totalFlourWeight * (definition.bakersPercentages.oil / 100), 0) : 0;
+  const totalSugarWeight = definition.bakersPercentages.sugar ? round(totalFlourWeight * (definition.bakersPercentages.sugar / 100), 0) : 0;
 
+  let finalIngredients: DoughRecipe['ingredients'] = [];
+  let preFermentIngredients: DoughRecipe['preFermentIngredients'] | undefined = undefined;
+  let preFermentationSteps: string[] | undefined = definition.preFermentation?.steps;
 
-  const ingredients: DoughRecipe['ingredients'] = [
-    { name: definition.flourType, quantity: `${flourWeight}g` },
-    { name: 'Water', quantity: `${waterWeight}g (or ml)` }, // Water density is ~1g/ml
-    { name: 'Salt', quantity: `${saltWeight}g` },
-    { name: 'Instant Dry Yeast', quantity: `${yeastWeight < 0.1 ? '< 0.1' : yeastWeight}g` }, // Show small amounts clearly
-  ];
-
-  if (oilWeight > 0) {
-    ingredients.push({ name: 'Oil', quantity: `${oilWeight}g` });
-  }
-  if (sugarWeight > 0) { // Add sugar if calculated
-      ingredients.push({ name: 'Sugar', quantity: `${sugarWeight}g` });
-  }
-
-
-  // Add pre-fermentation steps if defined
-  let preFermentationSteps: string[] | undefined = undefined;
   if (definition.preFermentation) {
-      // Simple placeholder text - real implementation would calculate amounts
-      preFermentationSteps = [
-          `Prepare ${definition.preFermentation.type} using calculated portion of total flour, water, and yeast.`,
-          ...definition.preFermentation.steps
-      ];
+    // Calculate Pre-ferment Ingredients
+    const pf = definition.preFermentation;
+    const pfFlour = round(totalFlourWeight * (pf.flourPercentage / 100), 0);
+    const pfWater = round(pfFlour * (pf.hydration / 100), 0); // Water based on pre-ferment flour
+    const pfYeast = round(totalYeastWeight * (pf.yeastPercentage / 100), 2);
+
+    preFermentIngredients = [
+        { name: definition.flourType, quantity: `${pfFlour}g` },
+        { name: 'Water', quantity: `${pfWater}g` },
+        { name: 'Instant Dry Yeast', quantity: formatYeast(pfYeast) },
+    ];
+
+    // Calculate Final Dough Ingredients (remaining amounts + salt/oil/sugar + pre-ferment)
+    const finalFlour = totalFlourWeight - pfFlour;
+    const finalWater = totalWaterWeight - pfWater;
+    const finalYeast = totalYeastWeight - pfYeast;
+    const preFermentWeight = pfFlour + pfWater + pfYeast; // Approximate weight
+
+    finalIngredients.push({ name: `Mature ${pf.type}`, quantity: `~${round(preFermentWeight,0)}g (All from above)` });
+    finalIngredients.push({ name: definition.flourType, quantity: `${finalFlour}g` });
+    finalIngredients.push({ name: 'Water', quantity: `${finalWater}g` });
+    if (finalYeast > 0.001) { // Only add if significant yeast remains
+        finalIngredients.push({ name: 'Instant Dry Yeast', quantity: formatYeast(finalYeast) });
+    }
+    finalIngredients.push({ name: 'Salt', quantity: `${totalSaltWeight}g` });
+    if (totalOilWeight > 0) {
+        finalIngredients.push({ name: 'Oil', quantity: `${totalOilWeight}g` });
+    }
+    if (totalSugarWeight > 0) {
+        finalIngredients.push({ name: 'Sugar', quantity: `${totalSugarWeight}g` });
+    }
+
+  } else {
+    // Direct dough - all ingredients go into the main mix
+    finalIngredients = [
+      { name: definition.flourType, quantity: `${totalFlourWeight}g` },
+      { name: 'Water', quantity: `${totalWaterWeight}g` },
+      { name: 'Salt', quantity: `${totalSaltWeight}g` },
+      { name: 'Instant Dry Yeast', quantity: formatYeast(totalYeastWeight) },
+    ];
+    if (totalOilWeight > 0) {
+      finalIngredients.push({ name: 'Oil', quantity: `${totalOilWeight}g` });
+    }
+    if (totalSugarWeight > 0) {
+      finalIngredients.push({ name: 'Sugar', quantity: `${totalSugarWeight}g` });
+    }
   }
 
 
   // Construct the final recipe object
   const finalRecipe: DoughRecipe = {
     doughType: definition.name,
-    ingredients: ingredients,
+    ingredients: finalIngredients,
+    preFermentIngredients: preFermentIngredients,
     preFermentationSteps: preFermentationSteps,
     fermentationSteps: definition.fermentationSteps.map(step =>
-        // Replace placeholders - simplistic example
-        step.replace('portions', `${numberOfBalls} portions`)
-           .replace('portions.', `${numberOfBalls} portions.`)
+      step.replace('portions', `${numberOfBalls} portions`)
+         .replace('portions.', `${numberOfBalls} portions.`)
     ),
   };
 

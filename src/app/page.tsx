@@ -26,7 +26,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { getCalculatedRecipe, type DoughRecipe } from '@/data/recipes'; // Import local recipe logic
-import { Pizza, ListChecks, ChefHat, Calculator } from 'lucide-react'; // Changed Loader2 to Calculator
+import { Pizza, ListChecks, ChefHat, Calculator, Wheat } from 'lucide-react'; // Added Wheat Icon
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 
@@ -62,7 +62,7 @@ const doughTypeNames: Record<DoughFormValues['doughType'], string> = {
 
 export default function Home() {
   const [doughRecipe, setDoughRecipe] = React.useState<DoughRecipe | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false); // Keep for potential future async ops or just UI feedback
+  const [isLoading, setIsLoading] = React.useState(false);
   const { toast } = useToast();
 
   const form = useForm<DoughFormValues>({
@@ -70,24 +70,22 @@ export default function Home() {
     defaultValues: {
       numberOfBalls: 3,
       ballSizeGrams: 250,
-      doughType: undefined, // Start with no default selection
+      doughType: undefined,
     },
   });
 
   const onSubmit: SubmitHandler<DoughFormValues> = (data) => {
-    setIsLoading(true); // Simulate loading for immediate feedback
-    setDoughRecipe(null); // Clear previous results
+    setIsLoading(true);
+    setDoughRecipe(null);
     console.log('Form submitted:', data);
 
     try {
-      // Use the local function to get the recipe
       const recipeKey = recipeKeys[data.doughType];
       const result = getCalculatedRecipe(recipeKey, data.numberOfBalls, data.ballSizeGrams);
 
       if (result) {
         setDoughRecipe(result);
       } else {
-        // This case should ideally not happen if doughType is validated by Zod
         throw new Error('Invalid dough type selected.');
       }
 
@@ -99,8 +97,7 @@ export default function Home() {
         description: 'Could not calculate the dough recipe. Please check inputs or try again.',
       });
     } finally {
-      // Simulate a short delay for better UX, remove if calculation is instant
-      setTimeout(() => setIsLoading(false), 300);
+      setTimeout(() => setIsLoading(false), 300); // Simulate network delay
     }
   };
 
@@ -183,12 +180,11 @@ export default function Home() {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
                       <>
-                        {/* Using Calculator icon instead of Loader */}
                         <Calculator className="mr-2 h-4 w-4 animate-spin" />
                         Calculating...
                       </>
                     ) : (
-                      'Calculate Dough Recipe' // Updated button text
+                      'Calculate Dough Recipe'
                     )}
                   </Button>
                 </form>
@@ -230,18 +226,37 @@ export default function Home() {
           {!isLoading && doughRecipe && (
             <Card className="shadow-lg">
               <CardHeader>
-                 {/* Use doughRecipe.doughType which now holds the proper name */}
                  <CardTitle className="text-2xl text-primary">Your {doughRecipe.doughType} Dough Recipe</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
-                {/* Ingredients */}
+                {/* Pre-Ferment Ingredients (if applicable) */}
+                {doughRecipe.preFermentIngredients && doughRecipe.preFermentIngredients.length > 0 && (
+                   <>
+                     <div>
+                       <h2 className="text-xl font-semibold mb-3 flex items-center">
+                         <Wheat className="mr-2 h-5 w-5 text-accent" /> Pre-Ferment Ingredients
+                       </h2>
+                       <ul className="list-disc list-inside space-y-1 text-foreground/90 bg-muted/30 p-4 rounded-md border">
+                         {doughRecipe.preFermentIngredients.map((item, index) => (
+                           <li key={`pf-ing-${index}`}>
+                             <strong>{item.name}:</strong> {item.quantity}
+                           </li>
+                         ))}
+                       </ul>
+                     </div>
+                     <Separator />
+                   </>
+                 )}
+
+                {/* Final Dough Ingredients */}
                 <div>
                   <h2 className="text-xl font-semibold mb-3 flex items-center">
-                    <ListChecks className="mr-2 h-5 w-5 text-accent" /> Ingredients
+                    <ListChecks className="mr-2 h-5 w-5 text-accent" />
+                    {doughRecipe.preFermentIngredients ? 'Final Dough Ingredients' : 'Ingredients'}
                   </h2>
                   <ul className="list-disc list-inside space-y-1 text-foreground/90 bg-muted/30 p-4 rounded-md border">
                     {doughRecipe.ingredients.map((item, index) => (
-                      <li key={index}>
+                      <li key={`final-ing-${index}`}>
                         <strong>{item.name}:</strong> {item.quantity}
                       </li>
                     ))}
@@ -255,11 +270,11 @@ export default function Home() {
                   <>
                     <div>
                        <h2 className="text-xl font-semibold mb-3 flex items-center">
-                         <ChefHat className="mr-2 h-5 w-5 text-accent" /> Pre-Fermentation
+                         <ChefHat className="mr-2 h-5 w-5 text-accent" /> Pre-Fermentation Steps
                        </h2>
                        <ol className="list-decimal list-inside space-y-2 text-foreground/90 pl-4">
                          {doughRecipe.preFermentationSteps.map((step, index) => (
-                           <li key={index}>{step}</li>
+                           <li key={`pf-step-${index}`}>{step}</li>
                          ))}
                        </ol>
                     </div>
@@ -267,14 +282,15 @@ export default function Home() {
                   </>
                 )}
 
-                {/* Fermentation Steps */}
+                {/* Fermentation & Dough Making Steps */}
                  <div>
                    <h2 className="text-xl font-semibold mb-3 flex items-center">
-                     <ChefHat className="mr-2 h-5 w-5 text-accent" /> Fermentation & Dough Making
+                     <ChefHat className="mr-2 h-5 w-5 text-accent" />
+                     {doughRecipe.preFermentationSteps ? 'Final Dough Making & Fermentation' : 'Fermentation & Dough Making'}
                    </h2>
                    <ol className="list-decimal list-inside space-y-2 text-foreground/90 pl-4">
                      {doughRecipe.fermentationSteps.map((step, index) => (
-                       <li key={index}>{step}</li>
+                       <li key={`f-step-${index}`}>{step}</li>
                      ))}
                    </ol>
                  </div>
