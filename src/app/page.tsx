@@ -175,12 +175,13 @@ export default function Home() {
   return (
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8 text-center">
-        <div className="flex justify-center items-center gap-2 mb-2">
-          {/* Conditionally render Pizza or Focaccia icon */}
-          {isFocaccia ? <MinusSquare className="h-10 w-10 text-primary" /> : <Pizza className="h-10 w-10 text-primary" />}
-          <h1 className="text-4xl font-bold text-primary">Dough Pal</h1>
+        <div className="flex justify-center items-center gap-3 mb-2">
+          {/* Simple placeholder for Brazil/Italy flags - replace with proper SVGs if needed */}
+          <span role="img" aria-label="Brazil Flag" className="text-3xl">🇧🇷</span>
+          <span role="img" aria-label="Italy Flag" className="text-3xl">🇮🇹</span>
+          <h1 className="text-4xl font-bold text-primary">Dough Guide do Marshut</h1>
         </div>
-        <p className="text-lg text-muted-foreground">Your guide to perfect homemade pizza & focaccia dough!</p>
+        <p className="text-lg text-muted-foreground">Your guide to perfect pizza & focaccia dough, inspired by Italian tradition and Brazilian flair!</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -188,7 +189,9 @@ export default function Home() {
         <div className="md:col-span-1">
           <Card className="shadow-lg">
             <CardHeader>
-              <CardTitle className="text-2xl">Dough Calculator</CardTitle>
+              <CardTitle className="text-2xl flex items-center gap-2">
+                <Calculator className="h-6 w-6 text-accent" /> Dough Calculator
+              </CardTitle>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -286,7 +289,10 @@ export default function Home() {
                         Calculating...
                       </>
                     ) : (
-                      'Calculate Dough Recipe'
+                       <>
+                         <Calculator className="mr-2 h-4 w-4" />
+                         Calculate Recipe
+                       </>
                     )}
                   </Button>
                 </form>
@@ -328,7 +334,10 @@ export default function Home() {
           {!isLoading && doughRecipe && (
             <Card className="shadow-lg">
               <CardHeader>
-                 <CardTitle className="text-2xl text-primary">Your {doughRecipe.doughType} Dough Recipe</CardTitle>
+                 <CardTitle className="text-2xl text-primary flex items-center gap-2">
+                    {isFocaccia ? <MinusSquare className="h-6 w-6" /> : <Pizza className="h-6 w-6" />}
+                    Your {doughRecipe.doughType} Recipe
+                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Pre-Ferment Ingredients (if applicable) */}
@@ -404,9 +413,10 @@ export default function Home() {
           )}
 
           {!isLoading && !doughRecipe && (
-             <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-10 border border-dashed rounded-lg">
-                 <Pizza size={48} className="mb-4" />
-                <p className="text-lg">Enter your preferences above and click "Calculate" to get your custom dough recipe!</p>
+             <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-10 border border-dashed rounded-lg bg-muted/20">
+                 <Pizza size={48} className="mb-4 text-primary/70" />
+                <p className="text-lg">Enter your preferences above and click "Calculate Recipe" to get your custom dough guide!</p>
+                <p className="text-sm mt-2"> Buon appetito! Bom apetite!</p>
               </div>
           )}
         </div>
@@ -414,5 +424,3 @@ export default function Home() {
     </div>
   );
 }
-
-    
