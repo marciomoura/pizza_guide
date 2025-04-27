@@ -25,8 +25,8 @@ import {
 } from '@/components/ui/select';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { generateDoughRecipe, type GenerateDoughInput, type GenerateDoughOutput } from '@/ai/flows/generate-dough-flow';
-import { Pizza, Loader2, ListChecks, ChefHat } from 'lucide-react';
+import { getCalculatedRecipe, type DoughRecipe } from '@/data/recipes'; // Import local recipe logic
+import { Pizza, ListChecks, ChefHat, Calculator } from 'lucide-react'; // Changed Loader2 to Calculator
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 
@@ -41,18 +41,28 @@ const doughFormSchema = z.object({
 
 type DoughFormValues = z.infer<typeof doughFormSchema>;
 
-// Define dough type display names
+// Define dough type keys used in the recipes data
+const recipeKeys: Record<DoughFormValues['doughType'], keyof typeof import('@/data/recipes')['recipes']> = {
+  biga: 'biga',
+  poolish: 'poolish',
+  neapolitan: 'neapolitan',
+  new_york: 'new_york',
+  brazilian: 'brazilian',
+};
+
+// Define dough type display names (can be fetched from recipes.ts if needed)
 const doughTypeNames: Record<DoughFormValues['doughType'], string> = {
-  biga: 'Biga',
-  poolish: 'Poolish',
+  biga: 'Biga (Pre-ferment)',
+  poolish: 'Poolish (Pre-ferment)',
   neapolitan: 'Classic Neapolitan',
   new_york: 'New York Style',
   brazilian: 'Brazilian Style',
 };
 
+
 export default function Home() {
-  const [doughRecipe, setDoughRecipe] = React.useState<GenerateDoughOutput | null>(null);
-  const [isLoading, setIsLoading] = React.useState(false);
+  const [doughRecipe, setDoughRecipe] = React.useState<DoughRecipe | null>(null);
+  const [isLoading, setIsLoading] = React.useState(false); // Keep for potential future async ops or just UI feedback
   const { toast } = useToast();
 
   const form = useForm<DoughFormValues>({
@@ -64,29 +74,33 @@ export default function Home() {
     },
   });
 
-  const onSubmit: SubmitHandler<DoughFormValues> = async (data) => {
-    setIsLoading(true);
+  const onSubmit: SubmitHandler<DoughFormValues> = (data) => {
+    setIsLoading(true); // Simulate loading for immediate feedback
     setDoughRecipe(null); // Clear previous results
     console.log('Form submitted:', data);
 
-    const input: GenerateDoughInput = {
-      numberOfBalls: data.numberOfBalls,
-      ballSizeGrams: data.ballSizeGrams,
-      doughType: doughTypeNames[data.doughType], // Send display name to flow
-    };
-
     try {
-      const result = await generateDoughRecipe(input);
-      setDoughRecipe(result);
+      // Use the local function to get the recipe
+      const recipeKey = recipeKeys[data.doughType];
+      const result = getCalculatedRecipe(recipeKey, data.numberOfBalls, data.ballSizeGrams);
+
+      if (result) {
+        setDoughRecipe(result);
+      } else {
+        // This case should ideally not happen if doughType is validated by Zod
+        throw new Error('Invalid dough type selected.');
+      }
+
     } catch (error) {
-      console.error('Failed to generate dough recipe:', error);
+      console.error('Failed to calculate dough recipe:', error);
       toast({
         variant: 'destructive',
-        title: 'Error Generating Recipe',
-        description: 'Could not generate the dough recipe. Please try again.',
+        title: 'Error Calculating Recipe',
+        description: 'Could not calculate the dough recipe. Please check inputs or try again.',
       });
     } finally {
-      setIsLoading(false);
+      // Simulate a short delay for better UX, remove if calculation is instant
+      setTimeout(() => setIsLoading(false), 300);
     }
   };
 
@@ -169,11 +183,12 @@ export default function Home() {
                   <Button type="submit" className="w-full" disabled={isLoading}>
                     {isLoading ? (
                       <>
-                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                        Generating...
+                        {/* Using Calculator icon instead of Loader */}
+                        <Calculator className="mr-2 h-4 w-4 animate-spin" />
+                        Calculating...
                       </>
                     ) : (
-                      'Generate Dough Recipe'
+                      'Calculate Dough Recipe' // Updated button text
                     )}
                   </Button>
                 </form>
@@ -215,7 +230,8 @@ export default function Home() {
           {!isLoading && doughRecipe && (
             <Card className="shadow-lg">
               <CardHeader>
-                 <CardTitle className="text-2xl text-primary">Your {doughTypeNames[form.getValues('doughType')]} Dough Recipe</CardTitle>
+                 {/* Use doughRecipe.doughType which now holds the proper name */}
+                 <CardTitle className="text-2xl text-primary">Your {doughRecipe.doughType} Dough Recipe</CardTitle>
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Ingredients */}
@@ -270,7 +286,7 @@ export default function Home() {
           {!isLoading && !doughRecipe && (
              <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-10 border border-dashed rounded-lg">
                 <Pizza size={48} className="mb-4" />
-                <p className="text-lg">Enter your preferences above and click "Generate" to get your custom pizza dough recipe!</p>
+                <p className="text-lg">Enter your preferences above and click "Calculate" to get your custom pizza dough recipe!</p>
               </div>
           )}
         </div>

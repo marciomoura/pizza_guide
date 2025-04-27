@@ -1,3 +1,4 @@
+
 import type { Metadata } from 'next';
 import { Inter } from 'next/font/google'; // Using Inter as a clean, readable font
 import './globals.css';
@@ -6,8 +7,8 @@ import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 const inter = Inter({ subsets: ['latin'] }); // Configure Inter font
 
 export const metadata: Metadata = {
-  title: 'Pizza Dough Pal - AI Dough Calculator',
-  description: 'Generate custom pizza dough recipes with precise ingredients and steps.',
+  title: 'Pizza Dough Pal - Recipe Calculator', // Updated Title
+  description: 'Calculate precise pizza dough recipes with ingredients and steps based on your needs.', // Updated Description
 };
 
 export default function RootLayout({
