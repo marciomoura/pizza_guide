@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card'; // Added CardDescription
 import { useToast } from '@/hooks/use-toast';
 import { getCalculatedRecipe, type DoughRecipe, recipes as recipeDefinitions } from '@/data/recipes'; // Import definitions too
 import { Pizza, ListChecks, ChefHat, Calculator, Wheat, Percent, MinusSquare } from 'lucide-react'; // Added Wheat, Percent Icons, MinusSquare for focaccia
@@ -173,25 +173,35 @@ export default function Home() {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    // Removed container div, layout handled by RootLayout's .main-content-area
+    <>
       <header className="mb-8 text-center">
-        <div className="flex justify-center items-center gap-3 mb-2">
-          {/* Simple placeholder for Brazil/Italy flags - replace with proper SVGs if needed */}
-          <span role="img" aria-label="Brazil Flag" className="text-3xl">🇧🇷</span>
-          <span role="img" aria-label="Italy Flag" className="text-3xl">🇮🇹</span>
+        <div className="flex justify-center items-center gap-3 mb-4">
+          {/* Italian Flag Representation */}
+          <div className="flex shadow-md">
+            <div className="w-6 h-9 bg-[hsl(var(--primary))]"></div> {/* Green */}
+            <div className="w-6 h-9 bg-white"></div> {/* White */}
+            <div className="w-6 h-9 bg-[hsl(var(--accent))]"></div> {/* Red */}
+          </div>
           <h1 className="text-4xl font-bold text-primary">Dough Guide do Marshut</h1>
+           <div className="flex shadow-md">
+            <div className="w-6 h-9 bg-[hsl(var(--primary))]"></div> {/* Green */}
+            <div className="w-6 h-9 bg-white"></div> {/* White */}
+            <div className="w-6 h-9 bg-[hsl(var(--accent))]"></div> {/* Red */}
+          </div>
         </div>
-        <p className="text-lg text-muted-foreground">Your guide to perfect pizza & focaccia dough, inspired by Italian tradition and Brazilian flair!</p>
+        <p className="text-lg text-muted-foreground">Your guide to perfect pizza & focaccia dough, rooted in Italian tradition!</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
         {/* Form Section */}
         <div className="md:col-span-1">
-          <Card className="shadow-lg">
+          <Card className="shadow-lg border-primary/30"> {/* Subtle border */}
             <CardHeader>
-              <CardTitle className="text-2xl flex items-center gap-2">
+              <CardTitle className="text-2xl flex items-center gap-2 text-primary">
                 <Calculator className="h-6 w-6 text-accent" /> Dough Calculator
               </CardTitle>
+              <CardDescription>Enter your dough preferences below.</CardDescription>
             </CardHeader>
             <CardContent>
               <Form {...form}>
@@ -282,7 +292,7 @@ export default function Home() {
                    )}
 
 
-                  <Button type="submit" className="w-full" disabled={isLoading}>
+                  <Button type="submit" className="w-full bg-accent hover:bg-accent/90 text-accent-foreground" disabled={isLoading}>
                     {isLoading ? (
                       <>
                         <Calculator className="mr-2 h-4 w-4 animate-spin" />
@@ -304,27 +314,27 @@ export default function Home() {
         {/* Results Section */}
         <div className="md:col-span-2">
           {isLoading && (
-            <Card className="shadow-lg">
+            <Card className="shadow-lg border-secondary/50">
               <CardHeader>
-                <Skeleton className="h-8 w-3/4" />
+                <Skeleton className="h-8 w-3/4 bg-muted/50" />
               </CardHeader>
               <CardContent className="space-y-6">
                 <div>
-                  <Skeleton className="h-6 w-1/4 mb-4" />
+                  <Skeleton className="h-6 w-1/4 mb-4 bg-muted/50" />
                   <div className="space-y-2">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-5/6" />
-                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full bg-muted/40" />
+                    <Skeleton className="h-4 w-5/6 bg-muted/40" />
+                    <Skeleton className="h-4 w-full bg-muted/40" />
                   </div>
                 </div>
                 <Separator />
                  <div>
-                  <Skeleton className="h-6 w-1/4 mb-4" />
+                  <Skeleton className="h-6 w-1/4 mb-4 bg-muted/50" />
                   <div className="space-y-3">
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-full" />
-                    <Skeleton className="h-4 w-5/6" />
-                    <Skeleton className="h-4 w-full" />
+                    <Skeleton className="h-4 w-full bg-muted/40" />
+                    <Skeleton className="h-4 w-full bg-muted/40" />
+                    <Skeleton className="h-4 w-5/6 bg-muted/40" />
+                    <Skeleton className="h-4 w-full bg-muted/40" />
                   </div>
                 </div>
               </CardContent>
@@ -332,22 +342,23 @@ export default function Home() {
           )}
 
           {!isLoading && doughRecipe && (
-            <Card className="shadow-lg">
+            <Card className="shadow-lg border-primary/30"> {/* Subtle border */}
               <CardHeader>
                  <CardTitle className="text-2xl text-primary flex items-center gap-2">
                     {isFocaccia ? <MinusSquare className="h-6 w-6" /> : <Pizza className="h-6 w-6" />}
                     Your {doughRecipe.doughType} Recipe
                  </CardTitle>
+                 <CardDescription>Total Portions: {numberOfBalls} @ {ballSizeGrams}g each</CardDescription> {/* Add calculated details */}
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Pre-Ferment Ingredients (if applicable) */}
                 {doughRecipe.preFermentIngredients && doughRecipe.preFermentIngredients.length > 0 && watchedDoughType && recipeKeys[watchedDoughType] && recipeDefinitions[recipeKeys[watchedDoughType]]?.preFermentation && (
                    <>
                      <div>
-                       <h2 className="text-xl font-semibold mb-3 flex items-center">
+                       <h2 className="text-xl font-semibold mb-3 flex items-center text-primary">
                          <Wheat className="mr-2 h-5 w-5 text-accent" /> {recipeDefinitions[recipeKeys[watchedDoughType]].preFermentation?.type} Ingredients ({doughRecipe.preFermentPercentageUsed}%)
                        </h2>
-                       <ul className="list-disc list-inside space-y-1 text-foreground/90 bg-muted/30 p-4 rounded-md border">
+                       <ul className="list-disc list-inside space-y-1 text-foreground/90 bg-secondary/50 p-4 rounded-md border border-secondary">
                          {doughRecipe.preFermentIngredients.map((item, index) => (
                            <li key={`pf-ing-${index}`}>
                              <strong>{item.name}:</strong> {item.quantity}
@@ -355,18 +366,18 @@ export default function Home() {
                          ))}
                        </ul>
                      </div>
-                     <Separator />
+                     <Separator className="bg-primary/20" />
                    </>
                  )}
 
 
                 {/* Final Dough Ingredients */}
                 <div>
-                  <h2 className="text-xl font-semibold mb-3 flex items-center">
+                  <h2 className="text-xl font-semibold mb-3 flex items-center text-primary">
                     <ListChecks className="mr-2 h-5 w-5 text-accent" />
                     {doughRecipe.preFermentIngredients ? 'Final Dough Ingredients' : 'Ingredients'}
                   </h2>
-                  <ul className="list-disc list-inside space-y-1 text-foreground/90 bg-muted/30 p-4 rounded-md border">
+                  <ul className="list-disc list-inside space-y-1 text-foreground/90 bg-secondary/50 p-4 rounded-md border border-secondary">
                     {doughRecipe.ingredients.map((item, index) => (
                       <li key={`final-ing-${index}`}>
                         <strong>{item.name}:</strong> {item.quantity}
@@ -376,13 +387,13 @@ export default function Home() {
                   {isFocaccia && <p className="text-sm text-muted-foreground mt-2">Note: Extra olive oil for pan and topping not included in list.</p>}
                 </div>
 
-                <Separator />
+                <Separator className="bg-primary/20" />
 
                 {/* Pre-Fermentation Steps */}
                 {doughRecipe.preFermentationSteps && doughRecipe.preFermentationSteps.length > 0 && watchedDoughType && recipeKeys[watchedDoughType] && recipeDefinitions[recipeKeys[watchedDoughType]]?.preFermentation && (
                   <>
                     <div>
-                       <h2 className="text-xl font-semibold mb-3 flex items-center">
+                       <h2 className="text-xl font-semibold mb-3 flex items-center text-primary">
                          <ChefHat className="mr-2 h-5 w-5 text-accent" /> {recipeDefinitions[recipeKeys[watchedDoughType]].preFermentation?.type} Steps
                        </h2>
                        <ol className="list-decimal list-inside space-y-2 text-foreground/90 pl-4">
@@ -391,13 +402,13 @@ export default function Home() {
                          ))}
                        </ol>
                     </div>
-                    <Separator />
+                    <Separator className="bg-primary/20" />
                   </>
                 )}
 
                 {/* Fermentation & Dough Making Steps */}
                  <div>
-                   <h2 className="text-xl font-semibold mb-3 flex items-center">
+                   <h2 className="text-xl font-semibold mb-3 flex items-center text-primary">
                      <ChefHat className="mr-2 h-5 w-5 text-accent" />
                      {doughRecipe.preFermentationSteps ? 'Final Dough Making & Processing' : 'Dough Making & Processing'}
                    </h2>
@@ -413,14 +424,14 @@ export default function Home() {
           )}
 
           {!isLoading && !doughRecipe && (
-             <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-10 border border-dashed rounded-lg bg-muted/20">
+             <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-10 border border-dashed border-primary/50 rounded-lg bg-muted/20">
                  <Pizza size={48} className="mb-4 text-primary/70" />
                 <p className="text-lg">Enter your preferences above and click "Calculate Recipe" to get your custom dough guide!</p>
-                <p className="text-sm mt-2"> Buon appetito! Bom apetite!</p>
+                <p className="text-sm mt-2"> Buon appetito!</p>
               </div>
           )}
         </div>
       </div>
-    </div>
+    </>
   );
 }

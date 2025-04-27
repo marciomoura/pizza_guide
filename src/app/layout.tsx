@@ -18,8 +18,15 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      {/* Body already has background image styles from globals.css */}
       <body className={`${inter.className} antialiased min-h-screen flex flex-col`}>
-        <main className="flex-grow">{children}</main>
+        {/* Wrap main content in a div to apply background and centered layout */}
+        <main className="flex-grow">
+           {/* This div will have the white background and be centered */}
+           <div className="main-content-area">
+              {children}
+           </div>
+        </main>
         <Toaster /> {/* Add Toaster component */}
       </body>
     </html>

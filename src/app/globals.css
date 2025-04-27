@@ -4,110 +4,125 @@
 
 body {
   font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif; /* Slightly updated font stack */
+  background-image: url('https://picsum.photos/1920/1080?blur=5&grayscale'); /* Placeholder pizzaria background */
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed; /* Keeps background fixed during scroll */
 }
+
+/* Add a semi-transparent overlay to darken the background slightly for better contrast */
+body::before {
+    content: "";
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.3); /* Adjust opacity as needed */
+    z-index: -1; /* Place it behind the content */
+}
+
 
 @layer base {
   :root {
-    /* Brazilian/Italian Inspired Theme */
-    /* Brazil Green: ~#009739 -> HSL(145, 100%, 30%) */
-    /* Brazil Yellow: ~#FEDD00 -> HSL(52, 100%, 50%) */
+    /* Italian Flag Inspired Theme */
     /* Italy Green: ~#008C45 -> HSL(150, 100%, 27%) */
-    /* Italy White: ~#F4F5F0 -> HSL(75, 27%, 95%) */
+    /* Italy White: ~#FFFFFF -> HSL(0, 0%, 100%) */
     /* Italy Red: ~#CD212A -> HSL(357, 73%, 47%) */
-    /* Earthy Brown (Coffee/Wood): ~#A0522D -> HSL(25, 57%, 40%) */
-    /* Cream/Beige (Pasta/Bread): ~#F5F5DC -> HSL(60, 56%, 91%) */
     /* Dark Text: ~#2F2F2F -> HSL(0, 0%, 18%) */
+    /* Light Gray (for cards/background): ~#F4F5F0 -> HSL(75, 27%, 95%) */
 
-    --background: 75 27% 95%; /* Italy White/Light Beige */
+    --background: 75 27% 95%; /* Light Gray/Off-White (main content background) */
     --foreground: 0 0% 18%; /* Dark Text */
 
-    --card: 75 27% 95%; /* Italy White/Light Beige */
+    --card: 0 0% 100%; /* White for cards */
     --card-foreground: 0 0% 18%; /* Dark Text */
 
-    --popover: 75 27% 95%; /* Italy White/Light Beige */
+    --popover: 0 0% 100%; /* White for popovers */
     --popover-foreground: 0 0% 18%; /* Dark Text */
 
-    --primary: 145 100% 30%; /* Brazil Green */
-    --primary-foreground: 75 27% 95%; /* Italy White for text on Green */
+    --primary: 150 100% 27%; /* Italy Green */
+    --primary-foreground: 0 0% 100%; /* White text on Green */
 
-    --secondary: 60 56% 91%; /* Cream/Beige (Pasta/Bread) */
-    --secondary-foreground: 25 57% 40%; /* Earthy Brown text on Cream */
+    --secondary: 75 15% 88%; /* Lighter Gray */
+    --secondary-foreground: 0 0% 18%; /* Dark Text */
 
-    --muted: 60 30% 93%; /* Lighter Cream/Beige */
+    --muted: 75 15% 92%; /* Even Lighter Gray */
     --muted-foreground: 0 0% 45%; /* Medium Grey */
 
     --accent: 357 73% 47%; /* Italy Red */
-    --accent-foreground: 75 27% 95%; /* Italy White for text on Red */
+    --accent-foreground: 0 0% 100%; /* White text on Red */
 
     --destructive: 357 73% 47%; /* Use Italy Red for destructive actions */
-    --destructive-foreground: 75 27% 95%; /* Italy White */
+    --destructive-foreground: 0 0% 100%; /* White */
 
-    --border: 60 20% 88%; /* Slightly darker Cream/Beige for borders */
-    --input: 60 20% 88%; /* Slightly darker Cream/Beige for input background */
-    --ring: 52 100% 50%; /* Brazil Yellow for focus rings */
+    --border: 0 0% 88%; /* Medium Gray for borders */
+    --input: 0 0% 100%; /* White background for input */
+    --ring: 150 100% 35%; /* Slightly lighter Green for focus rings */
 
-    --chart-1: 145 100% 30%; /* Brazil Green */
-    --chart-2: 52 100% 50%; /* Brazil Yellow */
-    --chart-3: 357 73% 47%; /* Italy Red */
-    --chart-4: 25 57% 40%; /* Earthy Brown */
-    --chart-5: 150 100% 27%; /* Italy Green */
+    --chart-1: 150 100% 27%; /* Italy Green */
+    --chart-2: 357 73% 47%; /* Italy Red */
+    --chart-3: 0 0% 60%; /* Medium Gray */
+    --chart-4: 150 50% 40%; /* Muted Green */
+    --chart-5: 357 50% 60%; /* Muted Red */
     --radius: 0.5rem;
 
-    /* Sidebar colors (using theme colors) */
+    /* Sidebar colors (using theme colors) - kept similar to previous for structure */
     --sidebar-background: 75 27% 95%;
     --sidebar-foreground: 0 0% 18%;
-    --sidebar-primary: 145 100% 30%;
-    --sidebar-primary-foreground: 75 27% 95%;
+    --sidebar-primary: 150 100% 27%;
+    --sidebar-primary-foreground: 0 0% 100%;
     --sidebar-accent: 357 73% 47%;
-    --sidebar-accent-foreground: 75 27% 95%;
-    --sidebar-border: 60 20% 88%;
-    --sidebar-ring: 52 100% 50%;
+    --sidebar-accent-foreground: 0 0% 100%;
+    --sidebar-border: 0 0% 88%;
+    --sidebar-ring: 150 100% 35%;
   }
 
   .dark {
-    /* Dark Mode Adaptation - Cool Grays with Theme Accents */
-    --background: 210 10% 15%; /* Dark Blue-Gray */
-    --foreground: 210 10% 85%; /* Light Gray */
+    /* Dark Mode Adaptation - Using Dark Grays with Italian Accents */
+    --background: 210 5% 15%; /* Dark Cool Gray (main content background) */
+    --foreground: 0 0% 85%; /* Light Gray Text */
 
-    --card: 210 10% 18%; /* Slightly lighter Dark Blue-Gray */
-    --card-foreground: 210 10% 85%; /* Light Gray */
+    --card: 210 5% 18%; /* Slightly lighter dark gray */
+    --card-foreground: 0 0% 85%; /* Light Gray Text */
 
-    --popover: 210 10% 15%; /* Dark Blue-Gray */
-    --popover-foreground: 210 10% 85%; /* Light Gray */
+    --popover: 210 5% 15%; /* Dark Cool Gray */
+    --popover-foreground: 0 0% 85%; /* Light Gray Text */
 
-    --primary: 145 80% 40%; /* Brighter Brazil Green */
-    --primary-foreground: 210 10% 95%; /* Near White */
+    --primary: 150 80% 40%; /* Brighter Italy Green */
+    --primary-foreground: 0 0% 95%; /* Near White */
 
-    --secondary: 60 15% 25%; /* Darker muted Yellow/Brown */
-    --secondary-foreground: 60 50% 85%; /* Lighter Cream */
+    --secondary: 210 5% 25%; /* Medium Dark Gray */
+    --secondary-foreground: 0 0% 85%; /* Light Gray Text */
 
-    --muted: 210 10% 22%; /* Darker Blue-Gray */
-    --muted-foreground: 210 10% 60%; /* Medium Gray */
+    --muted: 210 5% 22%; /* Darker Gray */
+    --muted-foreground: 0 0% 60%; /* Medium Gray */
 
     --accent: 357 70% 55%; /* Brighter Italy Red */
-    --accent-foreground: 210 10% 95%; /* Near White */
+    --accent-foreground: 0 0% 95%; /* Near White */
 
     --destructive: 357 70% 55%;
-    --destructive-foreground: 210 10% 95%;
+    --destructive-foreground: 0 0% 95%;
 
-    --border: 210 10% 30%; /* Medium Dark Gray border */
-    --input: 210 10% 30%; /* Medium Dark Gray input */
-    --ring: 52 90% 60%; /* Brighter Brazil Yellow */
+    --border: 0 0% 30%; /* Medium Dark Gray border */
+    --input: 0 0% 20%; /* Darker Gray input */
+    --ring: 150 80% 50%; /* Brighter Green */
 
-    --chart-1: 145 80% 40%;
-    --chart-2: 52 90% 60%;
-    --chart-3: 357 70% 55%;
-    --chart-4: 25 40% 50%; /* Muted Brown */
-    --chart-5: 150 80% 35%; /* Brighter Italy Green */
+    --chart-1: 150 80% 40%;
+    --chart-2: 357 70% 55%;
+    --chart-3: 0 0% 50%;
+    --chart-4: 150 50% 50%;
+    --chart-5: 357 50% 65%;
 
-    --sidebar-background: 210 10% 15%;
-    --sidebar-foreground: 210 10% 85%;
-    --sidebar-primary: 145 80% 40%;
-    --sidebar-primary-foreground: 210 10% 95%;
+     /* Sidebar colors (dark) */
+    --sidebar-background: 210 5% 15%;
+    --sidebar-foreground: 0 0% 85%;
+    --sidebar-primary: 150 80% 40%;
+    --sidebar-primary-foreground: 0 0% 95%;
     --sidebar-accent: 357 70% 55%;
-    --sidebar-accent-foreground: 210 10% 95%;
-    --sidebar-border: 210 10% 30%;
-    --sidebar-ring: 52 90% 60%;
+    --sidebar-accent-foreground: 0 0% 95%;
+    --sidebar-border: 0 0% 30%;
+    --sidebar-ring: 150 80% 50%;
   }
 }
 
@@ -115,7 +130,21 @@ body {
   * {
     @apply border-border;
   }
+  /* Ensure body text color contrasts with potential background image */
   body {
-    @apply bg-background text-foreground;
+     /* Let theme handle text color via main container */
+     /* Apply background color here only if body is the direct container */
+     /* @apply bg-background text-foreground; */
+     @apply text-foreground; /* Set default text color for elements outside the main container */
   }
+}
+
+/* Style for the main content area */
+.main-content-area {
+    @apply bg-background text-foreground mx-auto max-w-7xl p-4 sm:p-6 lg:p-8 my-8 rounded-lg shadow-xl;
+    /* Use theme background color */
+    /* Add margin top/bottom (my-8) */
+    /* Max width to constrain content */
+    /* Padding */
+    /* Rounded corners and shadow for the 'paper' effect */
 }
