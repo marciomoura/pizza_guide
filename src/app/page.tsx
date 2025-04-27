@@ -26,15 +26,15 @@ import {
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { getCalculatedRecipe, type DoughRecipe, recipes as recipeDefinitions } from '@/data/recipes'; // Import definitions too
-import { Pizza, ListChecks, ChefHat, Calculator, Wheat, Percent } from 'lucide-react'; // Added Wheat, Percent Icons
+import { Pizza, ListChecks, ChefHat, Calculator, Wheat, Percent, MinusSquare } from 'lucide-react'; // Added Wheat, Percent Icons, MinusSquare for focaccia
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 
 // Define Zod schema for form validation
 const doughFormSchema = z.object({
-  numberOfBalls: z.coerce.number().int().min(1, 'Must be at least 1 dough ball').max(20, 'Cannot exceed 20 dough balls'),
-  ballSizeGrams: z.coerce.number().int().min(150, 'Minimum size is 150g').max(1000, 'Maximum size is 1000g'),
-  doughType: z.enum(['biga', 'poolish', 'neapolitan', 'new_york', 'brazilian'], {
+  numberOfBalls: z.coerce.number().int().min(1, 'Must be at least 1 portion/ball').max(20, 'Cannot exceed 20 portions/balls'),
+  ballSizeGrams: z.coerce.number().int().min(150, 'Minimum size is 150g').max(2000, 'Maximum size is 2000g'), // Increased max for Focaccia
+  doughType: z.enum(['biga', 'poolish', 'neapolitan', 'new_york', 'brazilian', 'focaccia'], { // Added 'focaccia'
     required_error: 'Please select a dough type.',
   }),
   preFermentFlourPercentage: z.coerce.number().int().min(10, 'Must be at least 10%').max(80, 'Cannot exceed 80%').optional(),
@@ -57,15 +57,17 @@ const recipeKeys: Record<DoughFormValues['doughType'], keyof typeof recipeDefini
   neapolitan: 'neapolitan',
   new_york: 'new_york',
   brazilian: 'brazilian',
+  focaccia: 'focaccia', // Added 'focaccia'
 };
 
 // Define dough type display names (can be fetched from recipes.ts if needed)
 const doughTypeNames: Record<DoughFormValues['doughType'], string> = {
-  biga: 'Biga (Pre-ferment)',
-  poolish: 'Poolish (Pre-ferment)',
-  neapolitan: 'Classic Neapolitan',
-  new_york: 'New York Style',
-  brazilian: 'Brazilian Style',
+  biga: 'Biga (Pre-ferment Pizza)',
+  poolish: 'Poolish (Pre-ferment Pizza)',
+  neapolitan: 'Classic Neapolitan Pizza',
+  new_york: 'New York Style Pizza',
+  brazilian: 'Brazilian Style Pizza',
+  focaccia: 'Focaccia', // Added 'focaccia'
 };
 
 
@@ -84,29 +86,53 @@ export default function Home() {
     },
   });
 
-  // Watch the doughType field to conditionally show the percentage input
+  // Watch the doughType field to conditionally show the percentage input and change labels
   const watchedDoughType = form.watch('doughType');
   const requiresPreFerment = watchedDoughType === 'biga' || watchedDoughType === 'poolish';
+  const isFocaccia = watchedDoughType === 'focaccia';
 
-  // Effect to set default percentage when dough type changes
+  // Adjust labels and default values based on dough type
   React.useEffect(() => {
-    if (watchedDoughType === 'biga') {
+    if (isFocaccia) {
+        // Set typical focaccia defaults if type changes to focaccia
+        if (form.getValues('numberOfBalls') === 3 && form.getValues('ballSizeGrams') === 250) {
+             form.setValue('numberOfBalls', 1); // Typically 1 pan
+             form.setValue('ballSizeGrams', 800); // Typical weight for a 9x13 pan
+        }
+        form.setValue('preFermentFlourPercentage', undefined); // Focaccia doesn't use pre-ferment here
+        form.clearErrors('preFermentFlourPercentage');
+    } else if (watchedDoughType === 'biga') {
       // Set default for Biga if percentage is not already set or type changed
       if (form.getValues('preFermentFlourPercentage') === undefined) {
          form.setValue('preFermentFlourPercentage', recipeDefinitions.biga.preFermentation?.flourPercentage || 40, { shouldValidate: true });
+      }
+       // Reset pizza defaults if switched from focaccia
+      if (form.getValues('numberOfBalls') === 1 && form.getValues('ballSizeGrams') === 800) {
+          form.setValue('numberOfBalls', 3);
+          form.setValue('ballSizeGrams', 250);
       }
     } else if (watchedDoughType === 'poolish') {
        // Set default for Poolish if percentage is not already set or type changed
        if (form.getValues('preFermentFlourPercentage') === undefined) {
          form.setValue('preFermentFlourPercentage', recipeDefinitions.poolish.preFermentation?.flourPercentage || 30, { shouldValidate: true });
        }
+       // Reset pizza defaults if switched from focaccia
+       if (form.getValues('numberOfBalls') === 1 && form.getValues('ballSizeGrams') === 800) {
+           form.setValue('numberOfBalls', 3);
+           form.setValue('ballSizeGrams', 250);
+       }
     } else {
+      // For other pizza types, reset defaults if switched from focaccia
+      if (form.getValues('numberOfBalls') === 1 && form.getValues('ballSizeGrams') === 800) {
+          form.setValue('numberOfBalls', 3);
+          form.setValue('ballSizeGrams', 250);
+      }
       // Clear the percentage if the type doesn't need it
       form.setValue('preFermentFlourPercentage', undefined);
       // Manually clear errors if field is hidden
       form.clearErrors('preFermentFlourPercentage');
     }
-  }, [watchedDoughType, form]);
+  }, [watchedDoughType, form, isFocaccia]); // Add isFocaccia to dependency array
 
 
   const onSubmit: SubmitHandler<DoughFormValues> = (data) => {
@@ -150,10 +176,11 @@ export default function Home() {
     <div className="container mx-auto px-4 py-8">
       <header className="mb-8 text-center">
         <div className="flex justify-center items-center gap-2 mb-2">
-          <Pizza className="h-10 w-10 text-primary" />
-          <h1 className="text-4xl font-bold text-primary">Pizza Dough Pal</h1>
+          {/* Conditionally render Pizza or Focaccia icon */}
+          {isFocaccia ? <MinusSquare className="h-10 w-10 text-primary" /> : <Pizza className="h-10 w-10 text-primary" />}
+          <h1 className="text-4xl font-bold text-primary">Dough Pal</h1>
         </div>
-        <p className="text-lg text-muted-foreground">Your guide to perfect homemade pizza dough!</p>
+        <p className="text-lg text-muted-foreground">Your guide to perfect homemade pizza & focaccia dough!</p>
       </header>
 
       <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -171,11 +198,11 @@ export default function Home() {
                     name="numberOfBalls"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Number of Dough Balls</FormLabel>
+                        <FormLabel>{isFocaccia ? 'Number of Pans/Portions' : 'Number of Dough Balls'}</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="e.g., 3" {...field} />
+                          <Input type="number" placeholder={isFocaccia ? "e.g., 1" : "e.g., 3"} {...field} />
                         </FormControl>
-                        <FormDescription>How many pizzas you want to make.</FormDescription>
+                        <FormDescription>{isFocaccia ? 'How many focaccias you want to make.' : 'How many pizzas you want to make.'}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -186,11 +213,11 @@ export default function Home() {
                     name="ballSizeGrams"
                     render={({ field }) => (
                       <FormItem>
-                        <FormLabel>Size per Dough Ball (grams)</FormLabel>
+                        <FormLabel>{isFocaccia ? 'Weight per Portion (grams)' : 'Size per Dough Ball (grams)'}</FormLabel>
                         <FormControl>
-                          <Input type="number" placeholder="e.g., 250" {...field} />
+                          <Input type="number" placeholder={isFocaccia ? "e.g., 800" : "e.g., 250"} {...field} />
                         </FormControl>
-                        <FormDescription>Typical size is 200-300g.</FormDescription>
+                        <FormDescription>{isFocaccia ? 'Weight for your pan size (e.g., 800g for 9x13").' : 'Typical pizza size is 200-300g.'}</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -222,7 +249,7 @@ export default function Home() {
                             ))}
                           </SelectContent>
                         </Select>
-                        <FormDescription>Choose the style of pizza dough.</FormDescription>
+                        <FormDescription>Choose the style of dough.</FormDescription>
                         <FormMessage />
                       </FormItem>
                     )}
@@ -243,7 +270,7 @@ export default function Home() {
                              <Percent className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />
                             </div>
                            <FormDescription>
-                             Percentage of total flour used in the {doughTypeNames[watchedDoughType!].split(' ')[0]}.
+                             Percentage of total flour used in the {doughTypeNames[watchedDoughType!]?.split(' ')[0]}.
                            </FormDescription>
                            <FormMessage />
                          </FormItem>
@@ -305,11 +332,11 @@ export default function Home() {
               </CardHeader>
               <CardContent className="space-y-6">
                 {/* Pre-Ferment Ingredients (if applicable) */}
-                {doughRecipe.preFermentIngredients && doughRecipe.preFermentIngredients.length > 0 && (
+                {doughRecipe.preFermentIngredients && doughRecipe.preFermentIngredients.length > 0 && watchedDoughType && recipeKeys[watchedDoughType] && recipeDefinitions[recipeKeys[watchedDoughType]]?.preFermentation && (
                    <>
                      <div>
                        <h2 className="text-xl font-semibold mb-3 flex items-center">
-                         <Wheat className="mr-2 h-5 w-5 text-accent" /> {recipeDefinitions[recipeKeys[watchedDoughType!]]?.preFermentation?.type} Ingredients ({doughRecipe.preFermentPercentageUsed}%)
+                         <Wheat className="mr-2 h-5 w-5 text-accent" /> {recipeDefinitions[recipeKeys[watchedDoughType]].preFermentation?.type} Ingredients ({doughRecipe.preFermentPercentageUsed}%)
                        </h2>
                        <ul className="list-disc list-inside space-y-1 text-foreground/90 bg-muted/30 p-4 rounded-md border">
                          {doughRecipe.preFermentIngredients.map((item, index) => (
@@ -322,6 +349,7 @@ export default function Home() {
                      <Separator />
                    </>
                  )}
+
 
                 {/* Final Dough Ingredients */}
                 <div>
@@ -336,16 +364,17 @@ export default function Home() {
                       </li>
                     ))}
                   </ul>
+                  {isFocaccia && <p className="text-sm text-muted-foreground mt-2">Note: Extra olive oil for pan and topping not included in list.</p>}
                 </div>
 
                 <Separator />
 
                 {/* Pre-Fermentation Steps */}
-                {doughRecipe.preFermentationSteps && doughRecipe.preFermentationSteps.length > 0 && (
+                {doughRecipe.preFermentationSteps && doughRecipe.preFermentationSteps.length > 0 && watchedDoughType && recipeKeys[watchedDoughType] && recipeDefinitions[recipeKeys[watchedDoughType]]?.preFermentation && (
                   <>
                     <div>
                        <h2 className="text-xl font-semibold mb-3 flex items-center">
-                         <ChefHat className="mr-2 h-5 w-5 text-accent" /> {recipeDefinitions[recipeKeys[watchedDoughType!]]?.preFermentation?.type} Steps
+                         <ChefHat className="mr-2 h-5 w-5 text-accent" /> {recipeDefinitions[recipeKeys[watchedDoughType]].preFermentation?.type} Steps
                        </h2>
                        <ol className="list-decimal list-inside space-y-2 text-foreground/90 pl-4">
                          {doughRecipe.preFermentationSteps.map((step, index) => (
@@ -361,7 +390,7 @@ export default function Home() {
                  <div>
                    <h2 className="text-xl font-semibold mb-3 flex items-center">
                      <ChefHat className="mr-2 h-5 w-5 text-accent" />
-                     {doughRecipe.preFermentationSteps ? 'Final Dough Making & Fermentation' : 'Fermentation & Dough Making'}
+                     {doughRecipe.preFermentationSteps ? 'Final Dough Making & Processing' : 'Dough Making & Processing'}
                    </h2>
                    <ol className="list-decimal list-inside space-y-2 text-foreground/90 pl-4">
                      {doughRecipe.fermentationSteps.map((step, index) => (
@@ -376,8 +405,8 @@ export default function Home() {
 
           {!isLoading && !doughRecipe && (
              <div className="flex flex-col items-center justify-center h-full text-center text-muted-foreground p-10 border border-dashed rounded-lg">
-                <Pizza size={48} className="mb-4" />
-                <p className="text-lg">Enter your preferences above and click "Calculate" to get your custom pizza dough recipe!</p>
+                 <Pizza size={48} className="mb-4" />
+                <p className="text-lg">Enter your preferences above and click "Calculate" to get your custom dough recipe!</p>
               </div>
           )}
         </div>
@@ -385,3 +414,5 @@ export default function Home() {
     </div>
   );
 }
+
+    

@@ -1,5 +1,4 @@
 
-
 // Define the structure for recipe output
 export interface DoughRecipe {
   doughType: string; // Display name of the dough type
@@ -59,7 +58,7 @@ export const recipes: Record<string, RecipeDefinition> = {
       'Dissolve salt in remaining water and add to dough. Knead for 5-10 mins until smooth.',
       'Add yeast, incorporate fully. Knead for another 5 mins until elastic (windowpane test).',
       'Bulk Ferment: Cover dough and let rise at room temp (~20-24°C) for 2 hours.',
-      'Divide and Ball: Divide dough into portions. Shape into smooth balls.',
+      'Divide and Ball: Divide dough into {numberOfBalls} portions. Shape into smooth balls.',
       'Final Proof: Place balls in lightly oiled containers or a proofing box. Proof at room temp for 4-6 hours OR cold proof (fridge ~4°C) for 24-72 hours.',
       'Before use (if cold proofed), let balls sit at room temp for 1-2 hours.',
     ],
@@ -79,7 +78,7 @@ export const recipes: Record<string, RecipeDefinition> = {
       'Add water and oil. Mix on low speed with dough hook until combined.',
       'Increase speed to medium-low and knead for 8-12 minutes until smooth, elastic, and passes windowpane test.',
       'Bulk Ferment: Lightly oil a bowl, place dough in, turn to coat. Cover and let rise at room temp for 1-2 hours OR proceed directly to cold fermentation.',
-      'Divide and Ball: Divide dough into portions. Shape into tight balls.',
+      'Divide and Ball: Divide dough into {numberOfBalls} portions. Shape into tight balls.',
       'Cold Proof (Recommended): Place balls in oiled containers/bags. Refrigerate for 24-72 hours (48h often ideal).',
       'Temper: Before baking, remove dough from fridge and let it sit at room temp for 60-90 minutes.',
     ],
@@ -108,7 +107,7 @@ export const recipes: Record<string, RecipeDefinition> = {
       'Add Salt & Remaining Water: Dissolve salt in the last bit of water and add slowly while mixing on low.',
       'Knead: Increase speed to medium-low and knead for 10-15 minutes until smooth and elastic.',
       'Bulk Ferment: Cover dough and let rise at room temp for 1-2 hours (watch the dough, not the clock).',
-      'Divide and Ball: Divide dough into portions and shape into balls.',
+      'Divide and Ball: Divide dough into {numberOfBalls} portions and shape into balls.',
       'Final Proof: Place in containers. Proof at room temp for 3-5 hours OR cold proof for 12-48 hours.',
       'Temper: Before use (if cold proofed), let balls sit at room temp for 1-2 hours.',
     ],
@@ -136,7 +135,7 @@ export const recipes: Record<string, RecipeDefinition> = {
           'Add Water Gradually: Slowly add remaining water while mixing on low speed.',
           'Knead: Knead on medium-low speed for 8-12 minutes until dough is strong and elastic.',
           'Bulk Ferment: Cover dough, let rise at room temp for 1.5-2.5 hours, with folds every 45-60 mins if desired.',
-          'Divide and Ball: Gently divide and shape into balls.',
+          'Divide and Ball: Gently divide into {numberOfBalls} portions and shape into balls.',
           'Final Proof: Proof at room temp for 3-4 hours or cold proof for 12-24 hours.',
           'Temper: If cold proofed, temper at room temp for 1-2 hours before use.',
       ],
@@ -156,18 +155,39 @@ export const recipes: Record<string, RecipeDefinition> = {
           'Add Wet Ingredients: Add water and oil. Mix until a shaggy dough forms.',
           'Knead: Knead on a lightly floured surface or in a mixer for 8-10 minutes until smooth and soft.',
           'Bulk Ferment: Place in a lightly oiled bowl, cover, and let rise in a warm place for 1-1.5 hours, or until doubled.',
-          'Punch Down & Divide: Gently punch down the dough. Divide into portions.',
+          'Punch Down & Divide: Gently punch down the dough. Divide into {numberOfBalls} portions.',
           'Shape & Second Rise: Shape into balls or directly into pizza bases. Let rest/rise for another 20-30 minutes.',
           'Top and Bake: Add toppings and bake in a hot oven.',
       ],
+  },
+  focaccia: {
+    name: 'Focaccia',
+    flourType: 'Bread Flour or All-Purpose Flour',
+    bakersPercentages: {
+        water: 75, // High hydration
+        salt: 2.2,
+        yeast: 0.8,
+        oil: 5, // Oil in the dough, plus more for pan/topping
+    },
+    fermentationSteps: [
+        'Combine Ingredients: In a large bowl, whisk together flour, salt, and yeast.',
+        'Add Water & Oil: Add water and oil. Mix with a spatula or hands until a very wet, shaggy dough forms. No extensive kneading needed.',
+        'First Rise (Bulk Ferment): Cover the bowl. Let rise at room temperature for 1.5-2 hours, performing 2-3 sets of stretch-and-folds in the bowl during the first hour (wet hands to prevent sticking).',
+        'Pan Prep: Generously oil a baking sheet or pan (e.g., 9x13 inch).',
+        'Transfer & Shape: Gently transfer the dough to the oiled pan. Oil your hands and gently stretch/press the dough towards the edges of the pan. Don\'t force it if it resists; let it rest for 10-15 minutes and try again.',
+        'Second Rise (Proof in Pan): Cover the pan loosely. Let the dough proof at room temperature for 1-1.5 hours, until puffy and nearly doubled.',
+        'Dimple & Top: Preheat oven to 220°C (425°F). Oil your fingertips and dimple the dough all over, pressing down firmly to the bottom of the pan. Drizzle with more olive oil and sprinkle with flaky sea salt and optional herbs (like rosemary).',
+        'Bake: Bake for 20-25 minutes, or until golden brown and cooked through.',
+        'Cool: Let cool in the pan for a few minutes before transferring to a wire rack.',
+    ],
   },
 };
 
 // Function to calculate ingredients and generate the final recipe object
 export function getCalculatedRecipe(
   doughTypeKey: keyof typeof recipes,
-  numberOfBalls: number,
-  ballSizeGrams: number,
+  numberOfBalls: number, // For Focaccia, this represents portions/pans
+  ballSizeGrams: number, // Total weight per portion/pan for Focaccia
   preFermentFlourPercentageInput?: number // Optional: User-defined percentage
 ): DoughRecipe | null {
   const definition = recipes[doughTypeKey];
@@ -176,15 +196,18 @@ export function getCalculatedRecipe(
   const totalDoughWeight = numberOfBalls * ballSizeGrams;
 
   // Calculate total flour weight based on percentages
-  const totalPercentage =
-    1 +
-    definition.bakersPercentages.water / 100 +
-    definition.bakersPercentages.salt / 100 +
-    definition.bakersPercentages.yeast / 100 +
-    (definition.bakersPercentages.oil ?? 0) / 100 +
-    (definition.bakersPercentages.sugar ?? 0) / 100;
+  // Add 100 for the flour itself to the sum of percentages
+  const totalPercentageSum =
+    100 +
+    definition.bakersPercentages.water +
+    definition.bakersPercentages.salt +
+    definition.bakersPercentages.yeast +
+    (definition.bakersPercentages.oil ?? 0) +
+    (definition.bakersPercentages.sugar ?? 0);
 
-  const totalFlourWeight = round(totalDoughWeight / totalPercentage, 0);
+  // Total flour = Total Weight / (Sum of Percentages / 100)
+  const totalFlourWeight = round(totalDoughWeight / (totalPercentageSum / 100), 0);
+
 
   // Calculate total amounts for other ingredients based on total flour
   const totalWaterWeight = round(totalFlourWeight * (definition.bakersPercentages.water / 100), 0);
@@ -195,12 +218,14 @@ export function getCalculatedRecipe(
 
   let finalIngredients: DoughRecipe['ingredients'] = [];
   let preFermentIngredients: DoughRecipe['preFermentIngredients'] | undefined = undefined;
-  let preFermentationSteps: string[] | undefined = definition.preFermentation?.steps;
+  let preFermentationSteps: string[] | undefined = undefined; // Initialize as undefined
   let preFermentPercentageUsed : number | undefined = undefined;
 
-
+  // Check if the definition includes pre-fermentation settings
   if (definition.preFermentation) {
     const pfDefinition = definition.preFermentation;
+     // Assign steps if they exist
+    preFermentationSteps = pfDefinition.steps;
     // Use user input percentage if provided and valid, otherwise use default
     const flourPercentageToUse = preFermentFlourPercentageInput !== undefined && preFermentFlourPercentageInput >= 10 && preFermentFlourPercentageInput <= 80
       ? preFermentFlourPercentageInput
@@ -214,7 +239,7 @@ export function getCalculatedRecipe(
     const pfYeast = round(totalYeastWeight * (pfDefinition.yeastPercentage / 100), 2);
 
     preFermentIngredients = [
-        { name: definition.flourType, quantity: `${pfFlour}g` },
+        { name: `${pfDefinition.type} ${definition.flourType}`, quantity: `${pfFlour}g` },
         { name: 'Water', quantity: `${pfWater}g` },
         { name: 'Instant Dry Yeast', quantity: formatYeast(pfYeast) },
     ];
@@ -253,7 +278,7 @@ export function getCalculatedRecipe(
       { name: 'Instant Dry Yeast', quantity: formatYeast(totalYeastWeight) },
     ];
     if (totalOilWeight > 0) {
-      finalIngredients.push({ name: 'Oil', quantity: `${totalOilWeight}g` });
+      finalIngredients.push({ name: 'Olive Oil', quantity: `${totalOilWeight}g` }); // Specify Olive Oil for Focaccia clarity
     }
     if (totalSugarWeight > 0) {
       finalIngredients.push({ name: 'Sugar', quantity: `${totalSugarWeight}g` });
@@ -267,12 +292,15 @@ export function getCalculatedRecipe(
     ingredients: finalIngredients,
     preFermentIngredients: preFermentIngredients,
     preFermentPercentageUsed: preFermentPercentageUsed,
-    preFermentationSteps: preFermentationSteps,
+    preFermentationSteps: preFermentationSteps, // Use the potentially assigned steps
     fermentationSteps: definition.fermentationSteps.map(step =>
-      step.replace('portions', `${numberOfBalls} portions`)
-         .replace('portions.', `${numberOfBalls} portions.`)
+        // Replace placeholder for number of portions/balls, adjust for Focaccia wording
+        step.replace('{numberOfBalls} portions', doughTypeKey === 'focaccia' ? (numberOfBalls === 1 ? '1 portion' : `${numberOfBalls} portions`) : (numberOfBalls === 1 ? '1 ball' : `${numberOfBalls} balls`))
+           .replace('{numberOfBalls} portions.', doughTypeKey === 'focaccia' ? (numberOfBalls === 1 ? '1 portion.' : `${numberOfBalls} portions.`) : (numberOfBalls === 1 ? '1 ball.' : `${numberOfBalls} balls.`))
     ),
   };
 
   return finalRecipe;
 }
+
+    
