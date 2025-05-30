@@ -1,1 +1,1 @@
-The ultimate pizza guide for every pizza style you may select.
+The ultimate pizza guide for any pizza style of your choice.
