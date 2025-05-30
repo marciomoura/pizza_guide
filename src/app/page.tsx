@@ -182,11 +182,6 @@ export default function Home() {
             <div className="w-6 h-9 bg-[hsl(var(--accent))]"></div>
           </div>
           <h1 className="text-4xl font-bold text-primary">Pizza Guide</h1>
-           <div className="flex shadow-md">
-            <div className="w-6 h-9 bg-[hsl(var(--primary))]"></div>
-            <div className="w-6 h-9 bg-white"></div>
-            <div className="w-6 h-9 bg-[hsl(var(--accent))]"></div>
-          </div>
         </div>
         <p className="text-lg text-muted-foreground">Your guide to perfect pizza & focaccia dough, rooted in Italian tradition!</p>
       </header>
@@ -249,7 +244,7 @@ export default function Home() {
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a dough style" />
-                            </Trigger>
+                            </SelectTrigger>
                           </FormControl>
                           <SelectContent>
                             {Object.entries(doughTypeNames).map(([value, name]) => (
