@@ -7,7 +7,7 @@ import { Toaster } from "@/components/ui/toaster"; // Import Toaster
 const inter = Inter({ subsets: ['latin'] }); // Configure Inter font
 
 export const metadata: Metadata = {
-  title: 'Dough Guide do Marshut - Pizza & Focaccia Recipes', // Updated Title
+  title: 'Pizza Guide', // Updated Title
   description: 'Calculate precise pizza and focaccia dough recipes with ingredients and steps, inspired by Brazilian and Italian traditions.', // Updated Description
 };
 
