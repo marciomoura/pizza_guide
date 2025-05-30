@@ -186,7 +186,7 @@ export default function Home() {
             <div className="w-6 h-9 bg-white"></div>
             <div className="w-6 h-9 bg-[hsl(var(--accent))]"></div>
           </div>
-          <h1 className="text-4xl font-bold text-primary">Dough Guide do Marshut</h1>
+          <h1 className="text-4xl font-bold text-primary">Pizza Guide</h1>
            <div className="flex shadow-md">
             <div className="w-6 h-9 bg-[hsl(var(--primary))]"></div>
             <div className="w-6 h-9 bg-white"></div>
