@@ -26,7 +26,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { getCalculatedRecipe, type DoughRecipe, recipes as recipeDefinitions } from '@/data/recipes';
-import { Pizza, ListChecks, ChefHat, Calculator, Wheat, Percent, MinusSquare, Droplets } from 'lucide-react'; // Added Droplets for hydration
+import { Pizza, ListChecks, ChefHat, Calculator, Wheat, Percent, MinusSquare, Droplets } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 
@@ -46,7 +46,7 @@ const doughFormSchema = z.object({
   message: "Pre-ferment percentage is required for this dough type.",
   path: ["preFermentFlourPercentage"],
 }).refine(data => {
-  const requiresHydrationInput = data.doughType === 'biga' || data.doughType === 'poolish' || data.doughType === 'neapolitan';
+  const requiresHydrationInput = data.doughType === 'biga' || data.doughType === 'poolish' || data.doughType === 'neapolitan' || data.doughType === 'focaccia';
   return !requiresHydrationInput || (requiresHydrationInput && typeof data.doughHydrationPercentage === 'number');
 }, {
   message: "Dough hydration is required for this dough type.",
@@ -87,14 +87,14 @@ export default function Home() {
       ballSizeGrams: 250,
       doughType: undefined,
       preFermentFlourPercentage: undefined,
-      doughHydrationPercentage: undefined, // Initialize as undefined
+      doughHydrationPercentage: undefined,
     },
   });
 
   const watchedDoughType = form.watch('doughType');
   const requiresPreFerment = watchedDoughType === 'biga' || watchedDoughType === 'poolish';
   const isFocaccia = watchedDoughType === 'focaccia';
-  const requiresHydrationInput = watchedDoughType === 'neapolitan' || watchedDoughType === 'biga' || watchedDoughType === 'poolish';
+  const requiresHydrationInput = watchedDoughType === 'neapolitan' || watchedDoughType === 'biga' || watchedDoughType === 'poolish' || watchedDoughType === 'focaccia';
 
 
   React.useEffect(() => {
@@ -102,22 +102,19 @@ export default function Home() {
     const recipeKey = currentDoughType ? recipeKeys[currentDoughType] : undefined;
     const recipeDef = recipeKey ? recipeDefinitions[recipeKey] : undefined;
 
-    // Handle Focaccia specific sizing
     if (isFocaccia) {
         if (form.getValues('numberOfBalls') === 3 && form.getValues('ballSizeGrams') === 250) {
              form.setValue('numberOfBalls', 1);
              form.setValue('ballSizeGrams', 800);
         }
-    } else { // Reset to pizza defaults if switching away from Focaccia
+    } else {
         if (form.getValues('numberOfBalls') === 1 && form.getValues('ballSizeGrams') === 800) {
             form.setValue('numberOfBalls', 3);
             form.setValue('ballSizeGrams', 250);
         }
     }
 
-    // Handle preFermentFlourPercentage
     if (requiresPreFerment && recipeDef?.preFermentation) {
-        // Set default only if it's currently undefined (e.g., on first load or type change)
         if (form.getValues('preFermentFlourPercentage') === undefined) {
             form.setValue('preFermentFlourPercentage', recipeDef.preFermentation.flourPercentage, { shouldValidate: true });
         }
@@ -126,9 +123,7 @@ export default function Home() {
         form.clearErrors('preFermentFlourPercentage');
     }
 
-    // Handle doughHydrationPercentage
     if (requiresHydrationInput && recipeDef) {
-        // Set default only if it's currently undefined
         if (form.getValues('doughHydrationPercentage') === undefined) {
             form.setValue('doughHydrationPercentage', recipeDef.bakersPercentages.water, { shouldValidate: true });
         }
@@ -152,7 +147,7 @@ export default function Home() {
         data.numberOfBalls,
         data.ballSizeGrams,
         data.preFermentFlourPercentage,
-        data.doughHydrationPercentage // Pass the hydration percentage
+        data.doughHydrationPercentage
       );
 
       if (result) {
@@ -247,14 +242,14 @@ export default function Home() {
                         <Select onValueChange={(value) => {
                             field.onChange(value);
                             form.setValue('preFermentFlourPercentage', undefined, {shouldValidate: true});
-                            form.setValue('doughHydrationPercentage', undefined, {shouldValidate: true}); // Reset hydration too
+                            form.setValue('doughHydrationPercentage', undefined, {shouldValidate: true});
                           }}
                           defaultValue={field.value}
                          >
                           <FormControl>
                             <SelectTrigger>
                               <SelectValue placeholder="Select a dough style" />
-                            </SelectTrigger>
+                            </Trigger>
                           </FormControl>
                           <SelectContent>
                             {Object.entries(doughTypeNames).map(([value, name]) => (
@@ -304,7 +299,8 @@ export default function Home() {
                                <Input type="number" placeholder={
                                  watchedDoughType === 'neapolitan' ? 'e.g., 62' :
                                  watchedDoughType === 'biga' ? 'e.g., 68' :
-                                 watchedDoughType === 'poolish' ? 'e.g., 70' : 'e.g., 65'
+                                 watchedDoughType === 'poolish' ? 'e.g., 70' :
+                                 watchedDoughType === 'focaccia' ? 'e.g., 75' : 'e.g., 65'
                                } {...field} value={field.value ?? ''} />
                              </FormControl>
                              <Droplets className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground pointer-events-none" />

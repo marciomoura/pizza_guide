@@ -1,3 +1,4 @@
+
 import * as React from "react"
 
 import { cn } from "@/lib/utils"
@@ -30,29 +31,33 @@ const CardHeader = React.forwardRef<
 CardHeader.displayName = "CardHeader"
 
 const CardTitle = React.forwardRef<
-  HTMLParagraphElement, // Changed to p for semantic heading structure
+  HTMLHeadingElement, // Corrected: Was HTMLParagraphElement
   React.HTMLAttributes<HTMLHeadingElement>
->(({ className, ...props }, ref) => (
-  <h2 // Changed to h2 assuming CardTitle is within a CardHeader/section
+>(({ className, children, ...props }, ref) => ( // Added children to props signature
+  <h2 
     ref={ref}
     className={cn(
       "text-2xl font-semibold leading-none tracking-tight",
       className
     )}
     {...props}
-  />
+  >
+    {children} {/* Explicitly render children */}
+  </h2>
 ))
 CardTitle.displayName = "CardTitle"
 
 const CardDescription = React.forwardRef<
-  HTMLParagraphElement, // Changed to p
-  React.HTMLAttributes<HTMLParagraphElement> // Changed to HTMLParagraphElement
->(({ className, ...props }, ref) => (
-  <p // Changed to p
+  HTMLParagraphElement,
+  React.HTMLAttributes<HTMLParagraphElement>
+>(({ className, children, ...props }, ref) => ( // Added children to props signature
+  <p 
     ref={ref}
     className={cn("text-sm text-muted-foreground", className)}
     {...props}
-  />
+  >
+    {children} {/* Explicitly render children */}
+  </p>
 ))
 CardDescription.displayName = "CardDescription"
 

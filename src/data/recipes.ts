@@ -49,14 +49,14 @@ export const recipes: Record<string, RecipeDefinition> = {
     name: 'Classic Neapolitan',
     flourType: '"00" Flour',
     bakersPercentages: {
-      water: 62, // Default overall hydration
+      water: 62,
       salt: 2.8,
       yeast: 0.1,
     },
     fermentationSteps: [
-      'Combine flour and most of the water (reserve ~30ml). Mix until shaggy.',
+      'Combine flour and most of the water (reserve ~30ml, ideally water at 18-20°C to achieve a final dough temp of 23-25°C). Mix until shaggy.',
       'Dissolve salt in remaining water and add to dough. Knead for 5-10 mins until smooth.',
-      'Add yeast, incorporate fully. Knead for another 5 mins until elastic (windowpane test).',
+      'Add yeast, incorporate fully. Knead for another 5 mins until elastic (windowpane test). Monitor dough temperature; avoid letting it exceed 26°C.',
       'Bulk Ferment: Cover dough and let rise at room temp (~20-24°C) for 2 hours.',
       'Divide and Ball: Divide dough into {numberOfBalls} portions. Shape into smooth balls.',
       'Final Proof: Place balls in lightly oiled containers or a proofing box. Proof at room temp for 4-6 hours OR cold proof (fridge ~4°C) for 24-72 hours.',
@@ -75,8 +75,8 @@ export const recipes: Record<string, RecipeDefinition> = {
     },
     fermentationSteps: [
       'Combine flour, salt, yeast and sugar in a mixer bowl.',
-      'Add water and oil. Mix on low speed with dough hook until combined.',
-      'Increase speed to medium-low and knead for 8-12 minutes until smooth, elastic, and passes windowpane test.',
+      'Add water (cool, around 15-18°C) and oil. Mix on low speed with dough hook until combined.',
+      'Increase speed to medium-low and knead for 8-12 minutes until smooth, elastic, and passes windowpane test. Aim for a final dough temperature of 24-26°C. Avoid over-kneading which can heat the dough too much.',
       'Bulk Ferment: Lightly oil a bowl, place dough in, turn to coat. Cover and let rise at room temp for 1-2 hours OR proceed directly to cold fermentation.',
       'Divide and Ball: Divide dough into {numberOfBalls} portions. Shape into tight balls.',
       'Cold Proof (Recommended): Place balls in oiled containers/bags. Refrigerate for 24-72 hours (48h often ideal).',
@@ -87,25 +87,25 @@ export const recipes: Record<string, RecipeDefinition> = {
     name: 'Biga (Pre-ferment)',
     flourType: '"00" Flour or Bread Flour',
     bakersPercentages: {
-      water: 68, // Default overall hydration for the final dough
+      water: 68,
       salt: 3,
       yeast: 0.2,
     },
     preFermentation: {
       type: 'Biga',
       flourPercentage: 40,
-      hydration: 45, // Biga's own hydration
+      hydration: 45,
       yeastPercentage: 25,
       steps: [
-        'Mix Biga Ingredients: Combine Biga flour, Biga water, and Biga yeast. Mix briefly until just combined (shaggy, stiff dough). Do not knead.',
+        'Mix Biga Ingredients: Combine Biga flour, Biga water (cool, ~15-18°C), and Biga yeast. Mix briefly until just combined (shaggy, stiff dough). Do not knead. Target Biga temperature around 20-21°C.',
         'Ferment Biga: Cover loosely and let ferment at cool room temp (16-18°C) for 12-16 hours OR in the fridge (4°C) for 24-48 hours.',
       ],
     },
     fermentationSteps: [
-      'Combine Final Dough Ingredients: In a mixer bowl, combine the mature Biga (tear into small pieces), remaining flour, remaining yeast, and most of the remaining water.',
+      'Combine Final Dough Ingredients: In a mixer bowl, combine the mature Biga (tear into small pieces), remaining flour, remaining yeast, and most of the remaining water. Use cool water (10-15°C), especially if Biga is at room temperature, to manage final dough temperature.',
       'Mix Low: Mix on low speed until ingredients start coming together.',
       'Add Salt & Remaining Water: Dissolve salt in the last bit of water and add slowly while mixing on low.',
-      'Knead: Increase speed to medium-low and knead for 10-15 minutes until smooth and elastic.',
+      'Knead: Increase speed to medium-low and knead for 10-15 minutes until smooth and elastic. Target final dough temperature: 23-25°C. Adjust kneading time/speed to avoid exceeding this.',
       'Bulk Ferment: Cover dough and let rise at room temp for 1-2 hours (watch the dough, not the clock).',
       'Divide and Ball: Divide dough into {numberOfBalls} portions and shape into balls.',
       'Final Proof: Place in containers. Proof at room temp for 3-5 hours OR cold proof for 12-48 hours.',
@@ -116,24 +116,24 @@ export const recipes: Record<string, RecipeDefinition> = {
       name: 'Poolish (Pre-ferment)',
       flourType: '"00" Flour or All-Purpose Flour',
       bakersPercentages: {
-          water: 70, // Default overall hydration for the final dough
+          water: 70,
           salt: 2.8,
           yeast: 0.15,
       },
       preFermentation: {
           type: 'Poolish',
           flourPercentage: 30,
-          hydration: 100, // Poolish's own hydration (1:1 flour to water)
+          hydration: 100,
           yeastPercentage: 33,
           steps: [
-              'Mix Poolish Ingredients: Whisk together Poolish flour, Poolish water, and Poolish yeast until smooth (liquid batter).',
+              'Mix Poolish Ingredients: Whisk together Poolish flour, Poolish water (room temp, ~20-22°C), and Poolish yeast until smooth (liquid batter). Aim for a Poolish temperature of 22-24°C.',
               'Ferment Poolish: Cover and let ferment at room temp (~20-22°C) for 8-12 hours, or until bubbly, domed, and just starting to recede in the center.',
           ],
       },
       fermentationSteps: [
           'Combine Final Dough: In a mixer bowl, combine mature Poolish, remaining flour, remaining yeast, and salt.',
-          'Add Water Gradually: Slowly add remaining water while mixing on low speed.',
-          'Knead: Knead on medium-low speed for 8-12 minutes until dough is strong and elastic.',
+          'Add Water Gradually: Slowly add remaining water (cool, ~15-18°C) while mixing on low speed to control final dough temperature.',
+          'Knead: Knead on medium-low speed for 8-12 minutes until dough is strong and elastic. Target final dough temperature: 24-26°C. Adjust mixing to avoid overheating.',
           'Bulk Ferment: Cover dough, let rise at room temp for 1.5-2.5 hours, with folds every 45-60 mins if desired.',
           'Divide and Ball: Gently divide into {numberOfBalls} portions and shape into balls.',
           'Final Proof: Proof at room temp for 3-4 hours or cold proof for 12-24 hours.',
@@ -152,11 +152,11 @@ export const recipes: Record<string, RecipeDefinition> = {
       },
       fermentationSteps: [
           'Combine Dry Ingredients: Whisk flour, salt, yeast, and sugar in a bowl.',
-          'Add Wet Ingredients: Add water and oil. Mix until a shaggy dough forms.',
-          'Knead: Knead on a lightly floured surface or in a mixer for 8-10 minutes until smooth and soft.',
-          'Bulk Ferment: Place in a lightly oiled bowl, cover, and let rise in a warm place for 1-1.5 hours, or until doubled.',
+          'Add Wet Ingredients: Add water (lukewarm, ~25-30°C to help activate yeast, adjust if room is very warm) and oil. Mix until a shaggy dough forms.',
+          'Knead: Knead on a lightly floured surface or in a mixer for 8-10 minutes until smooth and soft. Avoid overheating the dough; target final dough temperature of 25-27°C.',
+          'Bulk Ferment: Place in a lightly oiled bowl, cover, and let rise in a warm place (around 25-28°C) for 1-1.5 hours, or until doubled.',
           'Punch Down & Divide: Gently punch down the dough. Divide into {numberOfBalls} portions.',
-          'Shape & Second Rise: Shape into balls or directly into pizza bases. Let rest/rise for another 20-30 minutes.',
+          'Shape & Second Rise: Shape into balls or directly into pizza bases. Let rest/rise for another 20-30 minutes in a warm spot.',
           'Top and Bake: Add toppings and bake in a hot oven.',
       ],
   },
@@ -171,13 +171,13 @@ export const recipes: Record<string, RecipeDefinition> = {
     },
     fermentationSteps: [
         'Combine Ingredients: In a large bowl, whisk together flour, salt, and yeast.',
-        'Add Water & Oil: Add water and oil. Mix with a spatula or hands until a very wet, shaggy dough forms. No extensive kneading needed.',
-        'First Rise (Bulk Ferment): Cover the bowl. Let rise at room temperature for 1.5-2 hours, performing 2-3 sets of stretch-and-folds in the bowl during the first hour (wet hands to prevent sticking).',
+        'Add Water & Oil: Add water (cool, ~18-20°C to manage stickiness and final dough temperature) and oil. Mix with a spatula or hands until a very wet, shaggy dough forms. No extensive kneading needed at this stage. Dough temp should be around 22-24°C.',
+        'First Rise (Bulk Ferment): Cover the bowl. Let rise at room temperature (ideally 22-24°C) for 1.5-2 hours, performing 2-3 sets of stretch-and-folds in the bowl during the first hour (wet hands to prevent sticking). This helps develop gluten without traditional kneading.',
         'Pan Prep: Generously oil a baking sheet or pan (e.g., 9x13 inch).',
         'Transfer & Shape: Gently transfer the dough to the oiled pan. Oil your hands and gently stretch/press the dough towards the edges of the pan. Don\'t force it if it resists; let it rest for 10-15 minutes and try again.',
-        'Second Rise (Proof in Pan): Cover the pan loosely. Let the dough proof at room temperature for 1-1.5 hours, until puffy and nearly doubled.',
-        'Dimple & Top: Preheat oven to 220°C (425°F). Oil your fingertips and dimple the dough all over, pressing down firmly to the bottom of the pan. Drizzle with more olive oil and sprinkle with flaky sea salt and optional herbs (like rosemary).',
-        'Bake: Bake for 20-25 minutes, or until golden brown and cooked through.',
+        'Second Rise (Proof in Pan): Cover the pan loosely. Let the dough proof at room temperature for 1-1.5 hours, until puffy and nearly doubled. The dough should jiggle slightly when the pan is moved.',
+        'Dimple & Top: Preheat oven to 220°C (425°F). Oil your fingertips and dimple the dough all over, pressing down firmly to the bottom of the pan. This creates the characteristic focaccia texture. Drizzle with more olive oil and sprinkle with flaky sea salt and optional herbs (like rosemary).',
+        'Bake: Bake for 20-25 minutes, or until golden brown and cooked through. Internal temperature should be around 96-99°C (205-210°F).',
         'Cool: Let cool in the pan for a few minutes before transferring to a wire rack.',
     ],
   },
@@ -194,10 +194,10 @@ export function getCalculatedRecipe(
   if (!definition) return null;
 
   let currentBakersPercentages = { ...definition.bakersPercentages };
-  let hydrationUsed = currentBakersPercentages.water; // Default to recipe's defined hydration
+  let hydrationUsed = currentBakersPercentages.water;
 
   // Override overall dough hydration if user provides valid input for specific types
-  if (['neapolitan', 'biga', 'poolish'].includes(doughTypeKey) &&
+  if (['neapolitan', 'biga', 'poolish', 'focaccia'].includes(doughTypeKey) && // Added focaccia
       doughHydrationPercentageInput !== undefined &&
       doughHydrationPercentageInput >= 50 && doughHydrationPercentageInput <= 100) {
     currentBakersPercentages.water = doughHydrationPercentageInput;
@@ -207,7 +207,7 @@ export function getCalculatedRecipe(
   const totalDoughWeight = numberOfBalls * ballSizeGrams;
 
   const totalPercentageSum =
-    100 + // Flour itself
+    100 + 
     currentBakersPercentages.water +
     currentBakersPercentages.salt +
     currentBakersPercentages.yeast +
@@ -215,7 +215,7 @@ export function getCalculatedRecipe(
     (currentBakersPercentages.sugar ?? 0);
 
   const totalFlourWeight = round(totalDoughWeight / (totalPercentageSum / 100), 0);
-  const totalWaterWeight = round(totalFlourWeight * (currentBakersPercentages.water / 100), 0); // This is TOTAL water for the dough
+  const totalWaterWeight = round(totalFlourWeight * (currentBakersPercentages.water / 100), 0);
   const totalSaltWeight = round(totalFlourWeight * (currentBakersPercentages.salt / 100), 1);
   const totalYeastWeight = round(totalFlourWeight * (currentBakersPercentages.yeast / 100), 2);
   const totalOilWeight = currentBakersPercentages.oil ? round(totalFlourWeight * (currentBakersPercentages.oil / 100), 0) : 0;
@@ -236,7 +236,6 @@ export function getCalculatedRecipe(
     preFermentPercentageUsed = flourPercentageToUse;
 
     const pfFlour = round(totalFlourWeight * (flourPercentageToUse / 100), 0);
-    // Water for pre-ferment is based on ITS OWN hydration, not overall dough hydration
     const pfWater = round(pfFlour * (pfDefinition.hydration / 100), 0);
     const pfYeast = round(totalYeastWeight * (pfDefinition.yeastPercentage / 100), 2);
 
@@ -247,7 +246,7 @@ export function getCalculatedRecipe(
     ];
 
     const finalFlour = totalFlourWeight - pfFlour;
-    const finalWater = totalWaterWeight - pfWater; // Remaining water for final dough
+    const finalWater = totalWaterWeight - pfWater; 
     const finalYeast = totalYeastWeight - pfYeast;
     const preFermentWeight = pfFlour + pfWater + pfYeast;
 
@@ -289,7 +288,7 @@ export function getCalculatedRecipe(
     ingredients: finalIngredients,
     preFermentIngredients: preFermentIngredientsList,
     preFermentPercentageUsed: preFermentPercentageUsed,
-    hydrationUsed: hydrationUsed, // Add the actual hydration used
+    hydrationUsed: hydrationUsed,
     preFermentationSteps: preFermentationSteps,
     fermentationSteps: definition.fermentationSteps.map(step =>
         step.replace(/\{numberOfBalls\}/g, numberOfBalls.toString())
@@ -298,3 +297,4 @@ export function getCalculatedRecipe(
 
   return finalRecipe;
 }
+
