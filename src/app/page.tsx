@@ -176,11 +176,9 @@ export default function Home() {
     <>
       <header className="mb-8 text-center">
         <div className="flex justify-center items-center gap-3 mb-4">
-          <div className="flex shadow-md">
-            <div className="w-6 h-9 bg-[hsl(var(--primary))]"></div>
-            <div className="w-6 h-9 bg-white"></div>
-            <div className="w-6 h-9 bg-[hsl(var(--accent))]"></div>
-          </div>
+          <div className="w-6 h-9 bg-[hsl(var(--primary))]"></div>
+          <div className="w-6 h-9 bg-white"></div>
+          <div className="w-6 h-9 bg-[hsl(var(--accent))]"></div>
           <h1 className="text-4xl font-bold text-primary">Pizza Guide</h1>
         </div>
         <p className="text-lg text-muted-foreground">Your guide to perfect pizza & focaccia dough, rooted in Italian tradition!</p>
@@ -447,7 +445,102 @@ export default function Home() {
           )}
         </div>
       </div>
+
+      {/* Flour Guide Section */}
+      <div className="mt-12">
+        <Card className="shadow-lg border-primary/30">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center gap-2 text-primary">
+              <Wheat className="h-6 w-6 text-accent" />
+              Understanding Your Flour
+            </CardTitle>
+            <CardDescription>A guide to choosing the right flour for your pizza.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 text-foreground/90">
+            <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">"00" Flour (Grano Tenero Tipo "00")</h3>
+              <p>
+                Often considered the gold standard for Neapolitan pizza, "00" flour is very finely milled.
+                It typically has a moderate protein content (around 10-12.5%). The fine milling allows for a very smooth,
+                extensible dough that can be stretched thin without tearing. It's excellent for high-temperature ovens
+                (like wood-fired ovens) and creates a soft, tender crust with a slight chew and beautiful blistering (leopard spotting).
+                While great for Neapolitan, it can also be used for other styles if a softer crust is desired.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">Bread Flour</h3>
+              <p>
+                Bread flour has a higher protein content (typically 12-14%) compared to "00" or all-purpose flour.
+                This higher protein content means more gluten development, resulting in a stronger, chewier crust with more structure.
+                It's ideal for styles like New York pizza, which benefit from a sturdy yet foldable slice. Bread flour can absorb more water,
+                allowing for higher hydration doughs if desired. It provides good rise and a satisfying chew.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">All-Purpose Flour (AP Flour)</h3>
+              <p>
+                All-purpose flour has a moderate protein content (around 10-12%), falling between "00" and bread flour.
+                It's a versatile option and can be used for many pizza styles, especially home oven pizzas. The crust will generally be
+                softer than one made with bread flour but might not have the same extensibility as "00" flour. It's a good choice for
+                Brazilian style pizzas or when you want a reliable, accessible flour. Results can vary slightly by brand.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">Key Takeaways:</h3>
+              <ul className="list-disc list-inside space-y-1 pl-4">
+                <li><strong>Higher Protein = More Gluten = Chewier Crust:</strong> Good for structure (e.g., New York style).</li>
+                <li><strong>Finer Mill ("00") = Smoother, More Extensible Dough:</strong> Ideal for Neapolitan style and high-heat baking.</li>
+                <li><strong>Airiness:</strong> Achieved through proper fermentation, hydration, and handling, not just flour type, though flour plays a role in gluten structure which traps gases.</li>
+              </ul>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
+
+      {/* Sauce Guide Section */}
+      <div className="mt-8 mb-8"> {/* Added mb-8 for bottom spacing */}
+        <Card className="shadow-lg border-primary/30">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center gap-2 text-primary">
+              {/* You can add a tomato or sauce icon here if desired */}
+              Crafting the Perfect Sauce
+            </CardTitle>
+            <CardDescription>Simple tips for a delicious pizza sauce.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 text-foreground/90">
+            <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">Quality Tomatoes are Key</h3>
+              <p>
+                The foundation of any great pizza sauce is high-quality tomatoes. Look for whole peeled San Marzano tomatoes (D.O.P. certified if possible)
+                or other good quality canned tomatoes. Crushing them by hand or with a quick pulse in a food processor gives a better texture
+                than pre-crushed tomatoes, which can sometimes be watery or have a metallic taste. Avoid tomato paste unless you're aiming for a very specific, concentrated flavor.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">Keep it Simple: Seasoning</h3>
+              <p>
+                Less is often more with pizza sauce. The goal is to complement the dough and toppings, not overpower them.
+              </p>
+              <ul className="list-disc list-inside space-y-1 pl-4 mt-2">
+                <li><strong>Salt:</strong> Essential for flavor. Add a pinch at a time and taste.</li>
+                <li><strong>Oregano:</strong> Dried oregano is classic. Add a pinch or two. Fresh oregano can be added after baking.</li>
+                <li><strong>Basil:</strong> Fresh basil leaves, added before or after baking, lend a wonderful aroma.</li>
+                <li><strong>Olive Oil (Optional):</strong> A small drizzle of good quality extra virgin olive oil can add richness.</li>
+                <li><strong>Garlic (Optional):</strong> A small amount of finely minced fresh garlic or a tiny pinch of garlic powder can be used, but be cautious not to overdo it.</li>
+                <li><strong>Sugar (Use Sparingly, if at all):</strong> Some tomatoes can be acidic. A tiny pinch of sugar can balance this, but often high-quality tomatoes don't need it. Taste first!</li>
+              </ul>
+            </div>
+             <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">To Cook or Not To Cook?</h3>
+              <p>
+                For many classic pizza styles like Neapolitan, the sauce is uncooked. Simply crushed tomatoes seasoned and spread directly onto the dough.
+                This allows the fresh tomato flavor to shine through after baking. If you prefer a thicker, more concentrated sauce, you can simmer it briefly (15-20 minutes)
+                to reduce it slightly.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </>
   );
 }
-
