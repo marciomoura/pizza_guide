@@ -26,7 +26,7 @@ import {
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
 import { getCalculatedRecipe, type DoughRecipe, recipes as recipeDefinitions } from '@/data/recipes';
-import { Pizza, ListChecks, ChefHat, Calculator, Wheat, Percent, MinusSquare, Droplets } from 'lucide-react';
+import { Pizza, ListChecks, ChefHat, Calculator, Wheat, Percent, MinusSquare, Droplets, Search, Utensils, Flame, CookingPot } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Separator } from '@/components/ui/separator';
 
@@ -179,8 +179,8 @@ export default function Home() {
           <div className="w-6 h-9 bg-[hsl(var(--primary))]"></div>
           <div className="w-6 h-9 bg-white"></div>
           <div className="w-6 h-9 bg-[hsl(var(--accent))]"></div>
-          <h1 className="text-4xl font-bold text-primary">Pizza Guide</h1>
         </div>
+        <h1 className="text-4xl font-bold text-primary">Pizza Guide</h1>
         <p className="text-lg text-muted-foreground">Your guide to perfect pizza & focaccia dough, rooted in Italian tradition!</p>
       </header>
 
@@ -454,7 +454,7 @@ export default function Home() {
               <Wheat className="h-6 w-6 text-accent" />
               Understanding Your Flour
             </CardTitle>
-            <CardDescription>A guide to choosing the right flour for your pizza.</CardDescription>
+            <CardDescription>A guide to choosing the right flour and dusting techniques.</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4 text-foreground/90">
             <div>
@@ -486,10 +486,20 @@ export default function Home() {
               </p>
             </div>
             <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">Semolina Flour (Semola Rimacinata) for Dusting</h3>
+              <p>
+                Semolina flour, particularly finely ground semolina ("Semola Rimacinata"), is excellent for dusting your work surface and pizza peel.
+                It has a coarser texture than regular flour, which helps prevent the dough from sticking and acts like tiny ball bearings.
+                A key advantage is that semolina tends to burn less easily at high temperatures compared to regular flour, reducing bitterness and smoke in the oven.
+                Using a 50/50 mix of regular flour and semolina for dusting is also a popular choice.
+              </p>
+            </div>
+            <div>
               <h3 className="text-lg font-semibold text-primary/90 mb-1">Key Takeaways:</h3>
               <ul className="list-disc list-inside space-y-1 pl-4">
                 <li><strong>Higher Protein = More Gluten = Chewier Crust:</strong> Good for structure (e.g., New York style).</li>
                 <li><strong>Finer Mill ("00") = Smoother, More Extensible Dough:</strong> Ideal for Neapolitan style and high-heat baking.</li>
+                <li><strong>Semolina for Dusting:</strong> Helps prevent sticking and reduces burning in the oven.</li>
                 <li><strong>Airiness:</strong> Achieved through proper fermentation, hydration, and handling, not just flour type, though flour plays a role in gluten structure which traps gases.</li>
               </ul>
             </div>
@@ -498,11 +508,11 @@ export default function Home() {
       </div>
 
       {/* Sauce Guide Section */}
-      <div className="mt-8 mb-8"> {/* Added mb-8 for bottom spacing */}
+      <div className="mt-8">
         <Card className="shadow-lg border-primary/30">
           <CardHeader>
             <CardTitle className="text-2xl flex items-center gap-2 text-primary">
-              {/* You can add a tomato or sauce icon here if desired */}
+              <Utensils className="h-6 w-6 text-accent" /> {/* Changed icon */}
               Crafting the Perfect Sauce
             </CardTitle>
             <CardDescription>Simple tips for a delicious pizza sauce.</CardDescription>
@@ -541,6 +551,64 @@ export default function Home() {
           </CardContent>
         </Card>
       </div>
+
+      {/* Home Oven Guide Section */}
+      <div className="mt-8 mb-8">
+        <Card className="shadow-lg border-primary/30">
+          <CardHeader>
+            <CardTitle className="text-2xl flex items-center gap-2 text-primary">
+              <CookingPot className="h-6 w-6 text-accent" />
+              Home Oven Pizza Perfection
+            </CardTitle>
+            <CardDescription>Tips for baking amazing pizza without a dedicated pizza oven.</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4 text-foreground/90">
+            <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">Use a Pizza Stone or Baking Steel</h3>
+              <p>
+                A pizza stone or (even better) a baking steel is crucial. These surfaces retain a lot of heat and transfer it directly to the bottom of your pizza,
+                resulting in a crispier crust. Steel conducts heat more effectively than stone, leading to faster bake times and often better "oven spring" (the initial puffiness of the crust).
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">Preheat, Preheat, Preheat!</h3>
+              <p>
+                Place your stone or steel on an oven rack (position discussed below) and preheat your oven to its absolute highest temperature (usually 250-290°C / 475-550°F)
+                for at least 45-60 minutes. This ensures the stone/steel is thoroughly heated and ready to cook your pizza quickly.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">Rack Position Matters</h3>
+              <p>
+                For most home ovens, placing the rack in the upper third (but not the very top slot) or middle of the oven works well.
+                If your oven has a very strong bottom element and a weaker top, a higher position can help cook the top more evenly.
+                Experiment to see what works best for your specific oven.
+              </p>
+            </div>
+            <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">Leverage Your Broiler (Grill Element) <Flame className="inline h-5 w-5 text-destructive" /></h3>
+              <p>
+                Home ovens lack the intense top heat of a true pizza oven. To compensate, you can use your broiler (top heating element or grill).
+                After the pizza has baked for a few minutes and the crust is set, you can switch the oven to broil for the last 1-3 minutes.
+                <strong>CAUTION:</strong> Watch your pizza like a hawk during this stage! It can go from perfectly charred to burnt in seconds. Keep the oven door slightly ajar if needed to monitor.
+                This technique helps to cook toppings, melt cheese beautifully, and achieve some leoparding or charring on the crust.
+              </p>
+            </div>
+             <div>
+              <h3 className="text-lg font-semibold text-primary/90 mb-1">Quick Launch & Retrieval</h3>
+              <p>
+                Have your pizza assembled on a lightly floured (or semolina-dusted) peel. Launch it onto the hot stone/steel with a quick, confident motion.
+                Bake times will vary (typically 5-10 minutes) depending on your oven and dough. Rotate the pizza halfway through if your oven has hot spots.
+                Retrieve with the peel once golden and bubbly.
+              </p>
+            </div>
+          </CardContent>
+        </Card>
+      </div>
     </>
   );
 }
+
+    
+
+    
